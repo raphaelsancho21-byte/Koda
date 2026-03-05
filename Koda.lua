@@ -7,7 +7,7 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.0.0"
+Koda.Version = "3.0.1"
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
 
