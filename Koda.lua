@@ -3051,7 +3051,7 @@ function Koda:Notify(Config)
         Size = UDim2.new(0, 32, 0, 32)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 9), Parent = IconFrame })
-    -- Gradient no ícone
+    -- Gradient no icone da notificacao
     Create("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, accentColor),
