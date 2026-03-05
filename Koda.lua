@@ -7,7 +7,7 @@
 ]]
 
 local Koda = {}
-Koda.Version = "2.1.4"
+Koda.Version = "3.0.0"
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
 
@@ -329,7 +329,7 @@ function Koda:CreateWindow(Config)
     Config = Config or {}
     Config.Name = Config.Name or "Koda Library"
     Config.Theme = Config.Theme or "Dark"
-    Config.Size = Config.Size or UDim2.new(0, 620, 0, 420)
+    Config.Size = Config.Size or UDim2.new(0, 700, 0, 460)
     
     local KeySystem = Config.KeySystem or false
     local KeySettings = Config.KeySettings or {}
@@ -394,7 +394,7 @@ function Koda:CreateWindow(Config)
     Window.MainScale = MainScale
 
     Create("UICorner", {
-        CornerRadius = UDim.new(0, 14),
+        CornerRadius = UDim.new(0, 18),
         Parent = MainFrame
     })
     
@@ -432,12 +432,12 @@ function Koda:CreateWindow(Config)
         Parent = MainFrame,
         BackgroundColor3 = Koda.Theme.DarkerColor,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, 48),
+        Size = UDim2.new(1, 0, 0, 56),
         ZIndex = 5
     })
 
     Create("UICorner", {
-        CornerRadius = UDim.new(0, 14),
+        CornerRadius = UDim.new(0, 18),
         Parent = TopBar
     })
     
@@ -447,14 +447,15 @@ function Koda:CreateWindow(Config)
         Parent = TopBar,
         BackgroundColor3 = Koda.Theme.DarkerColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 1, -14),
-        Size = UDim2.new(1, 0, 0, 14),
+        Position = UDim2.new(0, 0, 1, -18),
+        Size = UDim2.new(1, 0, 0, 18),
         ZIndex = 5
     })
 
     -- Animated gradient line under topbar
     local TopBarLine = CreateGradientBar(TopBar, 2, UDim2.new(0, 0, 1, -2))
     TopBarLine.ZIndex = 6
+    TopBarLine.BackgroundTransparency = 0
     local lineGrad = TopBarLine:FindFirstChildOfClass("UIGradient")
     if lineGrad then AnimateGradient(lineGrad) end
 
@@ -464,19 +465,22 @@ function Koda:CreateWindow(Config)
         Parent = TopBar,
         BackgroundColor3 = Koda.Theme.AccentColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 14, 0.5, -13),
-        Size = UDim2.new(0, 26, 0, 26),
+        Position = UDim2.new(0, 16, 0.5, -16),
+        Size = UDim2.new(0, 32, 0, 32),
         ZIndex = 6
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = LogoFrame })
+    Create("UICorner", { CornerRadius = UDim.new(0, 9), Parent = LogoFrame })
     Create("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Koda.Theme.AccentColor),
             ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent)
         }),
-        Rotation = 45,
+        Rotation = 135,
         Parent = LogoFrame
     })
+    -- Glow pulse no logo
+    GlowEffect(LogoFrame, Koda.Theme.AccentColor, 20, 0.8)
+    PulseAnimation(LogoFrame, "Rotation", -3, 3, 2.5)
     
     local LogoText = Create("TextLabel", {
         Parent = LogoFrame,
@@ -485,7 +489,7 @@ function Koda:CreateWindow(Config)
         Font = Enum.Font.GothamBlack,
         Text = string.sub(Config.Name, 1, 1):upper(),
         TextColor3 = Color3.new(1, 1, 1),
-        TextSize = 14,
+        TextSize = 16,
         ZIndex = 7
     })
 
@@ -493,12 +497,12 @@ function Koda:CreateWindow(Config)
         Name = "Title",
         Parent = TopBar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 50, 0, 0),
-        Size = UDim2.new(1, -140, 1, 0),
+        Position = UDim2.new(0, 58, 0, 0),
+        Size = UDim2.new(1, -170, 1, 0),
         Font = Enum.Font.GothamBold,
         Text = Config.Name,
         TextColor3 = Koda.Theme.TextColor,
-        TextSize = 16,
+        TextSize = 17,
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 6
     })
@@ -508,8 +512,8 @@ function Koda:CreateWindow(Config)
         Name = "Controls",
         Parent = TopBar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -90, 0, 0),
-        Size = UDim2.new(0, 90, 1, 0),
+        Position = UDim2.new(1, -100, 0, 0),
+        Size = UDim2.new(0, 100, 1, 0),
         ZIndex = 6
     })
 
@@ -517,24 +521,26 @@ function Koda:CreateWindow(Config)
     local MinButton = Create("TextButton", {
         Name = "MinButton",
         Parent = ControlsFrame,
-        BackgroundColor3 = Koda.Theme.ElementColor,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 5, 0.5, -13),
-        Size = UDim2.new(0, 26, 0, 26),
+        BackgroundColor3 = Koda.Theme.WarningColor,
+        BackgroundTransparency = 0.3,
+        Position = UDim2.new(0, 10, 0.5, -11),
+        Size = UDim2.new(0, 22, 0, 22),
         Font = Enum.Font.GothamBold,
-        Text = "-",
-        TextColor3 = Koda.Theme.SecondaryTextColor,
-        TextSize = 12,
+        Text = "",
+        TextColor3 = Color3.fromRGB(180, 120, 0),
+        TextSize = 14,
         AutoButtonColor = false,
         ZIndex = 7
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = MinButton })
+    Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = MinButton })
 
     MinButton.MouseEnter:Connect(function()
-        Tween(MinButton, 0.2, {BackgroundTransparency = 0.4, TextColor3 = Koda.Theme.WarningColor})
+        Tween(MinButton, 0.15, {BackgroundTransparency = 0, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Color3.fromRGB(140, 90, 0)})
+        MinButton.Text = "–"
     end)
     MinButton.MouseLeave:Connect(function()
-        Tween(MinButton, 0.2, {BackgroundTransparency = 1, TextColor3 = Koda.Theme.SecondaryTextColor})
+        Tween(MinButton, 0.15, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 22, 0, 22)})
+        MinButton.Text = ""
     end)
 
     local Minimized = false
@@ -555,24 +561,26 @@ function Koda:CreateWindow(Config)
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         Parent = ControlsFrame,
-        BackgroundColor3 = Koda.Theme.ElementColor,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -35, 0.5, -13),
-        Size = UDim2.new(0, 26, 0, 26),
+        BackgroundColor3 = Koda.Theme.ErrorColor,
+        BackgroundTransparency = 0.3,
+        Position = UDim2.new(1, -34, 0.5, -11),
+        Size = UDim2.new(0, 22, 0, 22),
         Font = Enum.Font.GothamBold,
-        Text = "X",
-        TextColor3 = Koda.Theme.SecondaryTextColor,
-        TextSize = 11,
+        Text = "",
+        TextColor3 = Color3.fromRGB(180, 40, 40),
+        TextSize = 12,
         AutoButtonColor = false,
         ZIndex = 7
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = CloseButton })
+    Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = CloseButton })
 
     CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, 0.2, {BackgroundTransparency = 0.4, BackgroundColor3 = Color3.fromRGB(200, 50, 50), TextColor3 = Color3.new(1, 1, 1)})
+        Tween(CloseButton, 0.15, {BackgroundTransparency = 0, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Color3.fromRGB(160, 30, 30)})
+        CloseButton.Text = "✕"
     end)
     CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, 0.2, {BackgroundTransparency = 1, BackgroundColor3 = Koda.Theme.ElementColor, TextColor3 = Koda.Theme.SecondaryTextColor})
+        Tween(CloseButton, 0.15, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 22, 0, 22)})
+        CloseButton.Text = ""
     end)
 
     CloseButton.MouseButton1Click:Connect(function()
@@ -609,8 +617,8 @@ function Koda:CreateWindow(Config)
         Parent = MainFrame,
         BackgroundColor3 = Koda.Theme.DarkerColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 0, 48),
-        Size = UDim2.new(0, 165, 1, -48)
+        Position = UDim2.new(0, 0, 0, 56),
+        Size = UDim2.new(0, 185, 1, -56)
     })
 
     -- Sidebar separator line
@@ -628,14 +636,14 @@ function Koda:CreateWindow(Config)
     local NavLabel = Create("TextLabel", {
         Parent = SideBar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 14, 0, 10),
-        Size = UDim2.new(1, -14, 0, 14),
+        Position = UDim2.new(0, 16, 0, 12),
+        Size = UDim2.new(1, -16, 0, 16),
         Font = Enum.Font.GothamBold,
-        Text = "⬡ NAVEGAÇÃO",
+        Text = "◈  NAVEGAÇÃO",
         TextColor3 = Koda.Theme.AccentColor,
-        TextSize = 9,
+        TextSize = 10,
         TextXAlignment = Enum.TextXAlignment.Left,
-        TextTransparency = 0.2
+        TextTransparency = 0.1
     })
     
     local SideBarList = Create("ScrollingFrame", {
@@ -643,11 +651,11 @@ function Koda:CreateWindow(Config)
         Parent = SideBar,
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 8, 0, 30),
-        Size = UDim2.new(1, -18, 1, -40),
+        Position = UDim2.new(0, 10, 0, 34),
+        Size = UDim2.new(1, -20, 1, -44),
         ScrollBarThickness = 2,
         ScrollBarImageColor3 = Koda.Theme.AccentColor,
-        ScrollBarImageTransparency = 0.5,
+        ScrollBarImageTransparency = 0.4,
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ElasticBehavior = Enum.ElasticBehavior.Always,
@@ -657,7 +665,7 @@ function Koda:CreateWindow(Config)
     
     local SideBarLayout = Create("UIListLayout", {
         Parent = SideBarList,
-        Padding = UDim.new(0, 4),
+        Padding = UDim.new(0, 5),
         SortOrder = Enum.SortOrder.LayoutOrder
     })
 
@@ -672,8 +680,8 @@ function Koda:CreateWindow(Config)
         Name = "Container",
         Parent = MainFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 165, 0, 48),
-        Size = UDim2.new(1, -165, 1, -48),
+        Position = UDim2.new(0, 185, 0, 56),
+        Size = UDim2.new(1, -185, 1, -56),
         ClipsDescendants = true
     })
 
@@ -692,12 +700,12 @@ function Koda:CreateWindow(Config)
         Name = "VersionFrame",
         Parent = MainFrame,
         BackgroundColor3 = Koda.Theme.AccentColor,
-        BackgroundTransparency = 0.9,
-        Position = UDim2.new(0, 8, 1, -22),
-        Size = UDim2.new(0, 70, 0, 16),
+        BackgroundTransparency = 0.82,
+        Position = UDim2.new(0, 10, 1, -24),
+        Size = UDim2.new(0, 78, 0, 18),
         ZIndex = 110
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = VersionFrame })
+    Create("UICorner", { CornerRadius = UDim.new(0, 5), Parent = VersionFrame })
 
     Create("TextLabel", {
         Name = "Version",
@@ -705,10 +713,10 @@ function Koda:CreateWindow(Config)
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
         Font = Enum.Font.GothamBold,
-        Text = "⚡ " .. Koda.Version,
+        Text = "✦ v" .. Koda.Version,
         TextColor3 = Koda.Theme.AccentColor,
-        TextTransparency = 0.3,
-        TextSize = 9,
+        TextTransparency = 0.1,
+        TextSize = 10,
         ZIndex = 111
     })
     
@@ -916,7 +924,7 @@ function Koda:CreateWindow(Config)
             BackgroundColor3 = Koda.Theme.AccentColor,
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 38),
+            Size = UDim2.new(1, 0, 0, 44),
             AutoButtonColor = false,
             Font = Enum.Font.GothamSemibold,
             Text = "",
@@ -926,7 +934,7 @@ function Koda:CreateWindow(Config)
         })
         
         Create("UICorner", {
-            CornerRadius = UDim.new(0, 8),
+            CornerRadius = UDim.new(0, 10),
             Parent = TabButton
         })
 
@@ -935,12 +943,12 @@ function Koda:CreateWindow(Config)
             Name = "IconFrame",
             Parent = TabButton,
             BackgroundColor3 = Koda.Theme.AccentColor,
-            BackgroundTransparency = 0.9,
-            Position = UDim2.new(0, 6, 0.5, -12),
-            Size = UDim2.new(0, 24, 0, 24),
+            BackgroundTransparency = 0.88,
+            Position = UDim2.new(0, 8, 0.5, -14),
+            Size = UDim2.new(0, 28, 0, 28),
             ZIndex = 2
         })
-        Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = TabIconFrame })
+        Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = TabIconFrame })
 
         local TabIconLabel;
         local IsImage = (type(Icon) == "string" and (Icon:match("rbxassetid://") or Icon:match("http://") or Icon:match("https://") or tonumber(Icon))) or (type(Icon) == "number")
@@ -949,7 +957,7 @@ function Koda:CreateWindow(Config)
              TabIconLabel = Create("ImageLabel", {
                  Parent = TabIconFrame,
                  BackgroundTransparency = 1,
-                 Size = UDim2.new(0, 14, 0, 14),
+                 Size = UDim2.new(0, 16, 0, 16),
                  AnchorPoint = Vector2.new(0.5, 0.5),
                  Position = UDim2.new(0.5, 0, 0.5, 0),
                  Image = (type(Icon) == "number" or tonumber(Icon)) and "rbxassetid://" .. tostring(Icon) or Icon,
@@ -964,7 +972,7 @@ function Koda:CreateWindow(Config)
                 Font = Enum.Font.GothamBold,
                 Text = Icon or "◆",
                 TextColor3 = Koda.Theme.AccentColor,
-                TextSize = 11,
+                TextSize = 13,
                 ZIndex = 3
             })
         end
@@ -973,12 +981,12 @@ function Koda:CreateWindow(Config)
             Name = "Label",
             Parent = TabButton,
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, 36, 0, 0),
-            Size = UDim2.new(1, -42, 1, 0),
+            Position = UDim2.new(0, 44, 0, 0),
+            Size = UDim2.new(1, -50, 1, 0),
             Font = Enum.Font.GothamSemibold,
             Text = Name,
             TextColor3 = Koda.Theme.SecondaryTextColor,
-            TextSize = 12,
+            TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextTruncate = Enum.TextTruncate.AtEnd,
             ZIndex = 2
@@ -990,8 +998,8 @@ function Koda:CreateWindow(Config)
             Parent = TabButton,
             BackgroundColor3 = Koda.Theme.AccentColor,
             BorderSizePixel = 0,
-            Position = UDim2.new(0, 0, 0.15, 0),
-            Size = UDim2.new(0, 3, 0.7, 0),
+            Position = UDim2.new(0, 0, 0.12, 0),
+            Size = UDim2.new(0, 4, 0.76, 0),
             Visible = false,
             ZIndex = 3
         })
@@ -1072,13 +1080,13 @@ function Koda:CreateWindow(Config)
                 Name = Name .. "Section",
                 Parent = TabScroll,
                 BackgroundColor3 = Koda.Theme.AccentColor,
-                BackgroundTransparency = 0.92,
+                BackgroundTransparency = 0.88,
                 BorderSizePixel = 0,
-                Size = UDim2.new(0.93, 0, 0, 30)
+                Size = UDim2.new(0.94, 0, 0, 34)
             })
             
             Create("UICorner", {
-                CornerRadius = UDim.new(0, 8),
+                CornerRadius = UDim.new(0, 10),
                 Parent = SectionFrame
             })
 
@@ -1088,10 +1096,10 @@ function Koda:CreateWindow(Config)
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
                 Position = UDim2.new(0, 0, 0.15, 0),
-                Size = UDim2.new(0, 3, 0.7, 0)
+                Size = UDim2.new(0, 4, 0.7, 0)
             })
             Create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = sBar })
-            Create("UIGradient", {
+            local sBarGrad = Create("UIGradient", {
                 Color = ColorSequence.new({
                     ColorSequenceKeypoint.new(0, Koda.Theme.AccentColor),
                     ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent)
@@ -1099,19 +1107,20 @@ function Koda:CreateWindow(Config)
                 Rotation = 90,
                 Parent = sBar
             })
+            AnimateGradient(sBarGrad)
             
             Create("TextLabel", {
                 Name = "Title",
                 Parent = SectionFrame,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 14, 0, 0),
-                Size = UDim2.new(1, -14, 1, 0),
+                Position = UDim2.new(0, 16, 0, 0),
+                Size = UDim2.new(1, -16, 1, 0),
                 Font = Enum.Font.GothamBlack,
                 Text = "  " .. Name:upper(),
                 TextColor3 = Koda.Theme.AccentColor,
-                TextSize = 10,
+                TextSize = 11,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                TextTransparency = 0.15
+                TextTransparency = 0.05
             })
 
             return SectionFrame
@@ -1209,35 +1218,35 @@ function Koda:CreateWindow(Config)
             Props.Callback = Props.Callback or function() end
             Props.Description = Props.Description or nil
             
-            local height = Props.Description and 52 or 42
+            local height = Props.Description and 58 or 46
             
             local ButtonFrame = Create("Frame", {
                 Name = Props.Name .. "Button",
                 Parent = TabScroll,
                 BackgroundColor3 = Koda.Theme.ElementColor,
-                BackgroundTransparency = 0.1,
+                BackgroundTransparency = 0.05,
                 BorderSizePixel = 0,
-                Size = UDim2.new(0.93, 0, 0, height),
+                Size = UDim2.new(0.94, 0, 0, height),
                 ClipsDescendants = true
             })
             
-            Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = ButtonFrame })
+            Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = ButtonFrame })
             local bStroke = Create("UIStroke", {
                 Color = Koda.Theme.StrokeColor,
                 Thickness = 1,
-                Transparency = 0.2,
+                Transparency = 0.3,
                 Parent = ButtonFrame
             })
 
             Create("TextLabel", {
                 Parent = ButtonFrame,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 14, 0, Props.Description and 6 or 0),
-                Size = UDim2.new(1, -60, 0, Props.Description and 20 or height),
+                Position = UDim2.new(0, 16, 0, Props.Description and 8 or 0),
+                Size = UDim2.new(1, -65, 0, Props.Description and 22 or height),
                 Font = Enum.Font.GothamSemibold,
                 Text = Props.Name,
                 TextColor3 = Koda.Theme.TextColor,
-                TextSize = 13,
+                TextSize = 14,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
@@ -1245,28 +1254,36 @@ function Koda:CreateWindow(Config)
                 Create("TextLabel", {
                     Parent = ButtonFrame,
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 14, 0, 26),
-                    Size = UDim2.new(1, -60, 0, 16),
+                    Position = UDim2.new(0, 16, 0, 30),
+                    Size = UDim2.new(1, -65, 0, 18),
                     Font = Enum.Font.GothamMedium,
                     Text = Props.Description,
                     TextColor3 = Koda.Theme.SecondaryTextColor,
-                    TextSize = 11,
+                    TextSize = 12,
                     TextXAlignment = Enum.TextXAlignment.Left,
-                    TextTransparency = 0.2
+                    TextTransparency = 0.15
                 })
             end
 
-            -- Arrow icon
-            local ArrowIcon = Create("TextLabel", {
+            -- Arrow icon (pill style)
+            local ArrowBadge = Create("Frame", {
                 Parent = ButtonFrame,
+                BackgroundColor3 = Koda.Theme.AccentColor,
+                BackgroundTransparency = 0.85,
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.new(1, -12, 0.5, 0),
+                Size = UDim2.new(0, 30, 0, 22),
+            })
+            Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = ArrowBadge })
+            local ArrowIcon = Create("TextLabel", {
+                Parent = ArrowBadge,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(1, -35, 0.5, -8),
-                Size = UDim2.new(0, 16, 0, 16),
+                Size = UDim2.new(1, 0, 1, 0),
                 Font = Enum.Font.GothamBold,
-                Text = "→",
-                TextColor3 = Koda.Theme.SecondaryTextColor,
-                TextSize = 16,
-                TextTransparency = 0.3
+                Text = "›",
+                TextColor3 = Koda.Theme.AccentColor,
+                TextSize = 18,
+                TextTransparency = 0.2
             })
 
             local Button = Create("TextButton", {
@@ -1279,22 +1296,21 @@ function Koda:CreateWindow(Config)
 
             Button.MouseEnter:Connect(function()
                 Tween(ButtonFrame, 0.2, {BackgroundTransparency = 0})
-                Tween(bStroke, 0.2, {Color = Koda.Theme.AccentColor, Transparency = 0.5})
-                Tween(ArrowIcon, 0.2, {TextTransparency = 0, TextColor3 = Koda.Theme.AccentColor, Position = UDim2.new(1, -32, 0.5, -8)})
+                Tween(bStroke, 0.2, {Color = Koda.Theme.AccentColor, Transparency = 0.4})
+                Tween(ArrowBadge, 0.2, {BackgroundTransparency = 0.65, Size = UDim2.new(0, 34, 0, 24)})
             end)
             
             Button.MouseLeave:Connect(function()
-                Tween(ButtonFrame, 0.2, {BackgroundTransparency = 0.1})
-                Tween(bStroke, 0.2, {Color = Koda.Theme.StrokeColor, Transparency = 0.2})
-                Tween(ArrowIcon, 0.2, {TextTransparency = 0.3, TextColor3 = Koda.Theme.SecondaryTextColor, Position = UDim2.new(1, -35, 0.5, -8)})
+                Tween(ButtonFrame, 0.2, {BackgroundTransparency = 0.05})
+                Tween(bStroke, 0.2, {Color = Koda.Theme.StrokeColor, Transparency = 0.3})
+                Tween(ArrowBadge, 0.2, {BackgroundTransparency = 0.85, Size = UDim2.new(0, 30, 0, 22)})
             end)
             
             Button.MouseButton1Click:Connect(function()
                 Ripple(ButtonFrame, Koda.Theme.AccentColor)
-                -- Click feedback
-                Tween(ButtonFrame, 0.05, {Size = UDim2.new(0.91, 0, 0, height - 2)})
-                task.wait(0.05)
-                Tween(ButtonFrame, 0.15, {Size = UDim2.new(0.93, 0, 0, height)})
+                Tween(ButtonFrame, 0.07, {Size = UDim2.new(0.92, 0, 0, height - 3)})
+                task.wait(0.07)
+                Tween(ButtonFrame, 0.18, {Size = UDim2.new(0.94, 0, 0, height)})
                 Props.Callback()
             end)
 
@@ -1316,35 +1332,35 @@ function Koda:CreateWindow(Config)
             Props.Description = Props.Description or nil
             local Toggled = Props.CurrentValue
 
-            local height = Props.Description and 52 or 42
+            local height = Props.Description and 58 or 46
 
             local ToggleFrame = Create("Frame", {
                 Name = Props.Name .. "Toggle",
                 Parent = TabScroll,
                 BackgroundColor3 = Koda.Theme.ElementColor,
-                BackgroundTransparency = 0.1,
+                BackgroundTransparency = 0.05,
                 BorderSizePixel = 0,
-                Size = UDim2.new(0.93, 0, 0, height),
+                Size = UDim2.new(0.94, 0, 0, height),
                 ClipsDescendants = true
             })
             
-            Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = ToggleFrame })
+            Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = ToggleFrame })
             local tStroke = Create("UIStroke", {
                 Color = Koda.Theme.StrokeColor,
                 Thickness = 1,
-                Transparency = 0.2,
+                Transparency = 0.3,
                 Parent = ToggleFrame
             })
 
             Create("TextLabel", {
                 Parent = ToggleFrame,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 14, 0, Props.Description and 6 or 0),
-                Size = UDim2.new(1, -70, 0, Props.Description and 20 or height),
+                Position = UDim2.new(0, 16, 0, Props.Description and 8 or 0),
+                Size = UDim2.new(1, -80, 0, Props.Description and 22 or height),
                 Font = Enum.Font.GothamSemibold,
                 Text = Props.Name,
                 TextColor3 = Koda.Theme.TextColor,
-                TextSize = 13,
+                TextSize = 14,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
@@ -1366,19 +1382,19 @@ function Koda:CreateWindow(Config)
             local OuterToggle = Create("Frame", {
                 Name = "Outer",
                 Parent = ToggleFrame,
-                BackgroundColor3 = Color3.fromRGB(30, 35, 55),
-                Position = UDim2.new(1, -52, 0.5, -10),
-                Size = UDim2.new(0, 38, 0, 20)
+                BackgroundColor3 = Color3.fromRGB(25, 30, 50),
+                Position = UDim2.new(1, -62, 0.5, -12),
+                Size = UDim2.new(0, 48, 0, 24)
             })
             Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = OuterToggle })
-            Create("UIStroke", { Color = Koda.Theme.StrokeColor, Thickness = 1, Transparency = 0.5, Parent = OuterToggle })
+            Create("UIStroke", { Color = Koda.Theme.StrokeColor, Thickness = 1, Transparency = 0.4, Parent = OuterToggle })
 
             local InnerToggle = Create("Frame", {
                 Name = "Inner",
                 Parent = OuterToggle,
                 BackgroundColor3 = Koda.Theme.SecondaryTextColor,
-                Position = Toggled and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8),
-                Size = UDim2.new(0, 16, 0, 16)
+                Position = Toggled and UDim2.new(1, -22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10),
+                Size = UDim2.new(0, 20, 0, 20)
             })
             Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = InnerToggle })
             
@@ -1405,14 +1421,14 @@ function Koda:CreateWindow(Config)
             local function Update()
                 if Toggled then
                     Tween(OuterToggle, 0.25, {BackgroundColor3 = Koda.Theme.AccentColor})
-                    TweenBounce(InnerToggle, 0.3, {Position = UDim2.new(1, -18, 0.5, -8), BackgroundColor3 = Color3.new(1, 1, 1)})
-                    Tween(InnerGlow, 0.25, {BackgroundTransparency = 0.5})
-                    Tween(tStroke, 0.25, {Color = Koda.Theme.AccentColor, Transparency = 0.6})
+                    TweenBounce(InnerToggle, 0.3, {Position = UDim2.new(1, -22, 0.5, -10), BackgroundColor3 = Color3.new(1, 1, 1)})
+                    Tween(InnerGlow, 0.25, {BackgroundTransparency = 0.4})
+                    Tween(tStroke, 0.25, {Color = Koda.Theme.AccentColor, Transparency = 0.5})
                 else
-                    Tween(OuterToggle, 0.25, {BackgroundColor3 = Color3.fromRGB(30, 35, 55)})
-                    Tween(InnerToggle, 0.25, {Position = UDim2.new(0, 2, 0.5, -8), BackgroundColor3 = Koda.Theme.SecondaryTextColor})
+                    Tween(OuterToggle, 0.25, {BackgroundColor3 = Color3.fromRGB(25, 30, 50)})
+                    Tween(InnerToggle, 0.25, {Position = UDim2.new(0, 2, 0.5, -10), BackgroundColor3 = Koda.Theme.SecondaryTextColor})
                     Tween(InnerGlow, 0.25, {BackgroundTransparency = 1})
-                    Tween(tStroke, 0.25, {Color = Koda.Theme.StrokeColor, Transparency = 0.2})
+                    Tween(tStroke, 0.25, {Color = Koda.Theme.StrokeColor, Transparency = 0.3})
                 end
                 Props.Callback(Toggled)
             end
@@ -1421,7 +1437,7 @@ function Koda:CreateWindow(Config)
                 Tween(ToggleFrame, 0.2, {BackgroundTransparency = 0})
             end)
             Button.MouseLeave:Connect(function()
-                Tween(ToggleFrame, 0.2, {BackgroundTransparency = 0.1})
+                Tween(ToggleFrame, 0.2, {BackgroundTransparency = 0.05})
             end)
 
             Button.MouseButton1Click:Connect(function()
@@ -1460,28 +1476,28 @@ function Koda:CreateWindow(Config)
                 Name = Props.Name .. "Slider",
                 Parent = TabScroll,
                 BackgroundColor3 = Koda.Theme.ElementColor,
-                BackgroundTransparency = 0.1,
+                BackgroundTransparency = 0.05,
                 BorderSizePixel = 0,
-                Size = UDim2.new(0.93, 0, 0, 56)
+                Size = UDim2.new(0.94, 0, 0, 62)
             })
             
-            Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = SliderFrame })
+            Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = SliderFrame })
             Create("UIStroke", {
                 Color = Koda.Theme.StrokeColor,
                 Thickness = 1,
-                Transparency = 0.2,
+                Transparency = 0.3,
                 Parent = SliderFrame
             })
 
             Create("TextLabel", {
                 Parent = SliderFrame,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 14, 0, 8),
-                Size = UDim2.new(1, -80, 0, 18),
+                Position = UDim2.new(0, 16, 0, 10),
+                Size = UDim2.new(1, -90, 0, 20),
                 Font = Enum.Font.GothamSemibold,
                 Text = Props.Name,
                 TextColor3 = Koda.Theme.TextColor,
-                TextSize = 13,
+                TextSize = 14,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
@@ -1489,11 +1505,11 @@ function Koda:CreateWindow(Config)
             local ValueBadge = Create("Frame", {
                 Parent = SliderFrame,
                 BackgroundColor3 = Koda.Theme.AccentColor,
-                BackgroundTransparency = 0.85,
-                Position = UDim2.new(1, -70, 0, 7),
-                Size = UDim2.new(0, 58, 0, 20)
+                BackgroundTransparency = 0.8,
+                Position = UDim2.new(1, -78, 0, 8),
+                Size = UDim2.new(0, 66, 0, 22)
             })
-            Create("UICorner", { CornerRadius = UDim.new(0, 5), Parent = ValueBadge })
+            Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = ValueBadge })
 
             local ValueLabel = Create("TextLabel", {
                 Parent = ValueBadge,
@@ -1502,15 +1518,15 @@ function Koda:CreateWindow(Config)
                 Font = Enum.Font.GothamBold,
                 Text = tostring(Value) .. Props.Suffix,
                 TextColor3 = Koda.Theme.AccentColor,
-                TextSize = 11
+                TextSize = 12
             })
 
             local SliderTrack = Create("Frame", {
                 Name = "Track",
                 Parent = SliderFrame,
-                BackgroundColor3 = Color3.fromRGB(25, 30, 48),
-                Position = UDim2.new(0, 14, 1, -16),
-                Size = UDim2.new(1, -28, 0, 6)
+                BackgroundColor3 = Color3.fromRGB(20, 25, 42),
+                Position = UDim2.new(0, 16, 1, -20),
+                Size = UDim2.new(1, -32, 0, 8)
             })
             Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = SliderTrack })
 
@@ -2175,11 +2191,11 @@ function Koda:CreateWindow(Config)
 
             -- Animate new tab in
             TabContent.Visible = true
-            TabContent.Position = UDim2.new(0.02, 0, 0, 8)
+            TabContent.Position = UDim2.new(0.04, 0, 0, 12)
             TabContent.GroupTransparency = 1
-            Tween(TabContent, 0.35, {Position = UDim2.new(0, 0, 0, 0), GroupTransparency = 0})
+            Tween(TabContent, 0.3, {Position = UDim2.new(0, 0, 0, 0), GroupTransparency = 0})
             
-            Tween(TabButton, 0.25, {BackgroundTransparency = 0.85})
+            Tween(TabButton, 0.25, {BackgroundTransparency = 0.82})
             
             local tabLabel = TabButton:FindFirstChild("Label")
             if tabLabel then Tween(tabLabel, 0.25, {TextColor3 = Koda.Theme.TextColor}) end
@@ -2248,19 +2264,20 @@ function Koda:CreateWindow(Config)
         Parent = LoadingFrame,
         BackgroundColor3 = Color3.new(1, 1, 1),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.35, 0),
-        Size = UDim2.new(0, 50, 0, 50),
+        Position = UDim2.new(0.5, 0, 0.33, 0),
+        Size = UDim2.new(0, 64, 0, 64),
         ZIndex = 101
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 14), Parent = LoadingLogo })
+    Create("UICorner", { CornerRadius = UDim.new(0, 18), Parent = LoadingLogo })
     Create("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Koda.Theme.AccentColor),
             ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent)
         }),
-        Rotation = 45,
+        Rotation = 135,
         Parent = LoadingLogo
     })
+    GlowEffect(LoadingLogo, Koda.Theme.AccentColor, 30, 0.7)
     
     local LoadingLogoText = Create("TextLabel", {
         Parent = LoadingLogo,
@@ -2269,7 +2286,7 @@ function Koda:CreateWindow(Config)
         Font = Enum.Font.GothamBlack,
         Text = string.sub(Config.Name, 1, 1):upper(),
         TextColor3 = Color3.new(1, 1, 1),
-        TextSize = 24,
+        TextSize = 30,
         ZIndex = 102
     })
 
@@ -2286,12 +2303,12 @@ function Koda:CreateWindow(Config)
     local LoadingTitle = Create("TextLabel", {
         Parent = LoadingFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 185),
-        Size = UDim2.new(1, 0, 0, 30),
+        Position = UDim2.new(0, 0, 0, 200),
+        Size = UDim2.new(1, 0, 0, 36),
         Font = Enum.Font.GothamBlack,
         Text = Config.LoadingTitle or Config.Name,
         TextColor3 = Koda.Theme.TextColor,
-        TextSize = 22,
+        TextSize = 26,
         ZIndex = 101,
         TextTransparency = 0
     })
@@ -2321,10 +2338,10 @@ function Koda:CreateWindow(Config)
     -- Loading progress bar with glow
     local ProgressBack = Create("Frame", {
         Parent = LoadingFrame,
-        BackgroundColor3 = Color3.fromRGB(25, 30, 48),
+        BackgroundColor3 = Color3.fromRGB(20, 25, 42),
         AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.new(0.5, 0, 0, 260),
-        Size = UDim2.new(0, 240, 0, 5),
+        Position = UDim2.new(0.5, 0, 0, 280),
+        Size = UDim2.new(0, 280, 0, 7),
         ZIndex = 101
     })
     Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = ProgressBack })
@@ -3006,7 +3023,7 @@ function Koda:Notify(Config)
         GroupTransparency = 1
     })
     
-    Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = NotifyFrame })
+    Create("UICorner", { CornerRadius = UDim.new(0, 14), Parent = NotifyFrame })
     
     local NotifyStroke = Create("UIStroke", {
         Color = accentColor,
@@ -3029,38 +3046,47 @@ function Koda:Notify(Config)
     local IconFrame = Create("Frame", {
         Parent = NotifyFrame,
         BackgroundColor3 = accentColor,
-        BackgroundTransparency = 0.85,
-        Position = UDim2.new(0, 14, 0, 10),
-        Size = UDim2.new(0, 26, 0, 26)
+        BackgroundTransparency = 0.82,
+        Position = UDim2.new(0, 14, 0, 12),
+        Size = UDim2.new(0, 32, 0, 32)
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = IconFrame })
+    Create("UICorner", { CornerRadius = UDim.new(0, 9), Parent = IconFrame })
+    -- Gradient no ícone
+    Create("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, accentColor),
+            ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent)
+        }),
+        Rotation = 135,
+        Parent = IconFrame
+    })
     Create("TextLabel", {
         Parent = IconFrame,
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
         Font = Enum.Font.GothamBold,
         Text = icon,
-        TextColor3 = accentColor,
-        TextSize = 14
+        TextColor3 = Color3.new(1, 1, 1),
+        TextSize = 15
     })
     
     local NTitle = Create("TextLabel", {
         Parent = NotifyFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 48, 0, 8),
-        Size = UDim2.new(1, -60, 0, 20),
+        Position = UDim2.new(0, 54, 0, 10),
+        Size = UDim2.new(1, -66, 0, 20),
         Font = Enum.Font.GothamBold,
         Text = Config.Title,
         TextColor3 = Koda.Theme.TextColor,
-        TextSize = 14,
+        TextSize = 15,
         TextXAlignment = Enum.TextXAlignment.Left
     })
     
     local NContent = Create("TextLabel", {
         Parent = NotifyFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 48, 0, 28),
-        Size = UDim2.new(1, -60, 0, 0),
+        Position = UDim2.new(0, 54, 0, 30),
+        Size = UDim2.new(1, -66, 0, 0),
         Font = Enum.Font.GothamMedium,
         Text = Config.Content,
         TextColor3 = Koda.Theme.SecondaryTextColor,
@@ -3074,16 +3100,16 @@ function Koda:Notify(Config)
     local ProgressBar = Create("Frame", {
         Parent = NotifyFrame,
         BackgroundColor3 = accentColor,
-        BackgroundTransparency = 0.5,
-        Position = UDim2.new(0, 0, 1, -3),
-        Size = UDim2.new(1, 0, 0, 3),
+        BackgroundTransparency = 0.4,
+        Position = UDim2.new(0, 0, 1, -4),
+        Size = UDim2.new(1, 0, 0, 4),
         ZIndex = 2
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 2), Parent = ProgressBar })
 
     -- Auto-Size based on content
     local textHeight = TextService:GetTextSize(Config.Content, 12, Enum.Font.GothamMedium, Vector2.new(260, 1000)).Y
-    local totalHeight = 44 + textHeight
+    local totalHeight = 50 + textHeight
     
     -- Animation In (slide from right)
     NotifyFrame.Position = UDim2.new(1, 20, 0, 0)
@@ -3092,7 +3118,7 @@ function Koda:Notify(Config)
     
     -- Animate progress bar
     task.delay(0.5, function()
-        Tween(ProgressBar, Config.Duration, {Size = UDim2.new(0, 0, 0, 3)}, Enum.EasingStyle.Linear)
+        Tween(ProgressBar, Config.Duration, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
     end)
     
     task.delay(Config.Duration + 0.5, function()
