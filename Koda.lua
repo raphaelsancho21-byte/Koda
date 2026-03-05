@@ -536,7 +536,7 @@ function Koda:CreateWindow(Config)
 
     MinButton.MouseEnter:Connect(function()
         Tween(MinButton, 0.15, {BackgroundTransparency = 0, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Color3.fromRGB(140, 90, 0)})
-        MinButton.Text = "–"
+        MinButton.Text = "-"
     end)
     MinButton.MouseLeave:Connect(function()
         Tween(MinButton, 0.15, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 22, 0, 22)})
@@ -576,7 +576,7 @@ function Koda:CreateWindow(Config)
 
     CloseButton.MouseEnter:Connect(function()
         Tween(CloseButton, 0.15, {BackgroundTransparency = 0, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Color3.fromRGB(160, 30, 30)})
-        CloseButton.Text = "✕"
+        CloseButton.Text = "X"
     end)
     CloseButton.MouseLeave:Connect(function()
         Tween(CloseButton, 0.15, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 22, 0, 22)})
@@ -1280,7 +1280,7 @@ function Koda:CreateWindow(Config)
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, 0, 1, 0),
                 Font = Enum.Font.GothamBold,
-                Text = "›",
+                Text = ">",
                 TextColor3 = Koda.Theme.AccentColor,
                 TextSize = 18,
                 TextTransparency = 0.2
