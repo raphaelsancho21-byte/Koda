@@ -1272,7 +1272,7 @@ function Koda:CreateWindow(Config)
                 BackgroundTransparency = 0.85,
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
-                Size = UDim2.new(0, 30, 0, 22),
+                Size = UDim2.new(0, 30, 0, 22)
             })
             Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = ArrowBadge })
             local ArrowIcon = Create("TextLabel", {
