@@ -521,13 +521,13 @@ function Koda:CreateWindow(Config)
     local MinButton = Create("TextButton", {
         Name = "MinButton",
         Parent = ControlsFrame,
-        BackgroundColor3 = Koda.Theme.WarningColor,
-        BackgroundTransparency = 0.3,
+        BackgroundColor3 = Koda.Theme.ElementColor,
+        BackgroundTransparency = 1,
         Position = UDim2.new(0, 10, 0.5, -11),
         Size = UDim2.new(0, 22, 0, 22),
         Font = Enum.Font.GothamBold,
-        Text = "",
-        TextColor3 = Color3.fromRGB(180, 120, 0),
+        Text = "-",
+        TextColor3 = Koda.Theme.SecondaryTextColor,
         TextSize = 14,
         AutoButtonColor = false,
         ZIndex = 7
@@ -535,19 +535,17 @@ function Koda:CreateWindow(Config)
     Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = MinButton })
 
     MinButton.MouseEnter:Connect(function()
-        Tween(MinButton, 0.15, {BackgroundTransparency = 0, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Color3.fromRGB(140, 90, 0)})
-        MinButton.Text = "-"
+        Tween(MinButton, 0.15, {BackgroundTransparency = 0.8, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Koda.Theme.TextColor})
     end)
     MinButton.MouseLeave:Connect(function()
-        Tween(MinButton, 0.15, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 22, 0, 22)})
-        MinButton.Text = ""
+        Tween(MinButton, 0.15, {BackgroundTransparency = 1, Size = UDim2.new(0, 22, 0, 22), TextColor3 = Koda.Theme.SecondaryTextColor})
     end)
 
     local Minimized = false
     local OriginalSize = Config.Size
 
     MinButton.MouseButton1Click:Connect(function()
-        Ripple(MinButton, Koda.Theme.WarningColor)
+        Ripple(MinButton, Koda.Theme.AccentColor)
         if not Minimized then
             Minimized = true
             Tween(MainFrame, 0.4, {Size = UDim2.new(0, Config.Size.X.Offset, 0, 48)})
@@ -561,13 +559,13 @@ function Koda:CreateWindow(Config)
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         Parent = ControlsFrame,
-        BackgroundColor3 = Koda.Theme.ErrorColor,
-        BackgroundTransparency = 0.3,
+        BackgroundColor3 = Koda.Theme.ElementColor,
+        BackgroundTransparency = 1,
         Position = UDim2.new(1, -34, 0.5, -11),
         Size = UDim2.new(0, 22, 0, 22),
         Font = Enum.Font.GothamBold,
-        Text = "",
-        TextColor3 = Color3.fromRGB(180, 40, 40),
+        Text = "X",
+        TextColor3 = Koda.Theme.SecondaryTextColor,
         TextSize = 12,
         AutoButtonColor = false,
         ZIndex = 7
@@ -575,12 +573,10 @@ function Koda:CreateWindow(Config)
     Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = CloseButton })
 
     CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, 0.15, {BackgroundTransparency = 0, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Color3.fromRGB(160, 30, 30)})
-        CloseButton.Text = "X"
+        Tween(CloseButton, 0.15, {BackgroundTransparency = 0.8, Size = UDim2.new(0, 24, 0, 24), TextColor3 = Koda.Theme.ErrorColor})
     end)
     CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, 0.15, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 22, 0, 22)})
-        CloseButton.Text = ""
+        Tween(CloseButton, 0.15, {BackgroundTransparency = 1, Size = UDim2.new(0, 22, 0, 22), TextColor3 = Koda.Theme.SecondaryTextColor})
     end)
 
     CloseButton.MouseButton1Click:Connect(function()
