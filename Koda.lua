@@ -2293,9 +2293,9 @@ function Koda:CreateWindow(Config)
     -- Pulse animation on logo
     task.spawn(function()
         while LoadingLogo and LoadingLogo.Parent do
-            Tween(LoadingLogo, 0.8, {Size = UDim2.new(0, 55, 0, 55), Rotation = 5})
+            Tween(LoadingLogo, 0.8, {Size = UDim2.new(0, 68, 0, 68), Rotation = 5})
             task.wait(0.8)
-            Tween(LoadingLogo, 0.8, {Size = UDim2.new(0, 50, 0, 50), Rotation = -5})
+            Tween(LoadingLogo, 0.8, {Size = UDim2.new(0, 60, 0, 60), Rotation = -5})
             task.wait(0.8)
         end
     end)
@@ -2325,7 +2325,7 @@ function Koda:CreateWindow(Config)
     local LoadingSubtitle = Create("TextLabel", {
         Parent = LoadingFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 215),
+        Position = UDim2.new(0, 0, 0, 242),
         Size = UDim2.new(1, 0, 0, 20),
         Font = Enum.Font.GothamMedium,
         Text = Config.LoadingSubtitle or "Inicializando módulos...",
@@ -2340,7 +2340,7 @@ function Koda:CreateWindow(Config)
         Parent = LoadingFrame,
         BackgroundColor3 = Color3.fromRGB(20, 25, 42),
         AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.new(0.5, 0, 0, 280),
+        Position = UDim2.new(0.5, 0, 0, 300),
         Size = UDim2.new(0, 280, 0, 7),
         ZIndex = 101
     })
