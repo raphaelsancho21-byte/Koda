@@ -7,7 +7,7 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.0.1"
+Koda.Version = "3.0.2"
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
 
@@ -126,6 +126,21 @@ Koda.Themes = {
         ErrorColor = Color3.fromRGB(244, 63, 94),
         InfoColor = Color3.fromRGB(251, 191, 36),
         ShadowColor = Color3.fromRGB(6, 3, 4)
+    },
+    Christmas = {
+        MainColor = Color3.fromRGB(15, 30, 20),
+        AccentColor = Color3.fromRGB(180, 20, 20),
+        SecondaryAccent = Color3.fromRGB(212, 175, 55),
+        TextColor = Color3.fromRGB(245, 245, 245),
+        SecondaryTextColor = Color3.fromRGB(200, 220, 200),
+        StrokeColor = Color3.fromRGB(40, 80, 50),
+        DarkerColor = Color3.fromRGB(10, 20, 15),
+        ElementColor = Color3.fromRGB(25, 45, 30),
+        SuccessColor = Color3.fromRGB(100, 255, 100),
+        WarningColor = Color3.fromRGB(212, 175, 55),
+        ErrorColor = Color3.fromRGB(200, 30, 30),
+        InfoColor = Color3.fromRGB(255, 255, 255),
+        ShadowColor = Color3.fromRGB(0, 0, 0)
     }
 }
 
@@ -2988,7 +3003,7 @@ function Koda:Notify(Config)
     Config.Title = Config.Title or "Notification"
     Config.Content = Config.Content or "Content"
     Config.Duration = Config.Duration or 5
-    Config.Type = Config.Type or "Info" -- Info, Success, Warning, Error
+    Config.Type = Config.Type or "Info" -- Info, Success, Warning, Error, Message
     
     if not Koda.NotifyHolder then return end
     
@@ -2996,14 +3011,16 @@ function Koda:Notify(Config)
         Info = Koda.Theme.InfoColor or Koda.Theme.AccentColor,
         Success = Koda.Theme.SuccessColor or Color3.fromRGB(34, 197, 94),
         Warning = Koda.Theme.WarningColor or Color3.fromRGB(250, 204, 21),
-        Error = Koda.Theme.ErrorColor or Color3.fromRGB(239, 68, 68)
+        Error = Koda.Theme.ErrorColor or Color3.fromRGB(239, 68, 68),
+        Message = Color3.fromRGB(150, 150, 150)
     }
     
     local typeIcons = {
         Info = "ℹ",
         Success = "✓",
         Warning = "⚠",
-        Error = "✕"
+        Error = "✕",
+        Message = "✉"
     }
     
     local accentColor = typeColors[Config.Type] or typeColors.Info
@@ -3028,7 +3045,6 @@ function Koda:Notify(Config)
         Transparency = 0.5
     })
     
-    -- Accent bar on left side
     local NotifyAccent = Create("Frame", {
         Parent = NotifyFrame,
         BackgroundColor3 = accentColor,
@@ -3038,7 +3054,6 @@ function Koda:Notify(Config)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = NotifyAccent })
 
-    -- Icon
     local IconFrame = Create("Frame", {
         Parent = NotifyFrame,
         BackgroundColor3 = accentColor,
@@ -3047,8 +3062,8 @@ function Koda:Notify(Config)
         Size = UDim2.new(0, 32, 0, 32)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 9), Parent = IconFrame })
-    -- Gradient no icone da notificacao
-    Create("UIGradient", {
+    
+    local IconGrad = Create("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, accentColor),
             ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent)
@@ -3056,7 +3071,8 @@ function Koda:Notify(Config)
         Rotation = 135,
         Parent = IconFrame
     })
-    Create("TextLabel", {
+
+    local IconLabel = Create("TextLabel", {
         Parent = IconFrame,
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
@@ -3092,7 +3108,6 @@ function Koda:Notify(Config)
         TextWrapped = true
     })
 
-    -- Progress bar for duration
     local ProgressBar = Create("Frame", {
         Parent = NotifyFrame,
         BackgroundColor3 = accentColor,
@@ -3103,28 +3118,67 @@ function Koda:Notify(Config)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 2), Parent = ProgressBar })
 
-    -- Auto-Size based on content
-    local textHeight = TextService:GetTextSize(Config.Content, 12, Enum.Font.GothamMedium, Vector2.new(260, 1000)).Y
-    local totalHeight = 50 + textHeight
-    
-    -- Animation In (slide from right)
-    NotifyFrame.Position = UDim2.new(1, 20, 0, 0)
-    TweenBounce(NotifyFrame, 0.5, {Size = UDim2.new(1, 0, 0, totalHeight), Position = UDim2.new(0, 0, 0, 0)})
-    Tween(NotifyFrame, 0.3, {GroupTransparency = 0})
-    
-    -- Animate progress bar
-    task.delay(0.5, function()
-        Tween(ProgressBar, Config.Duration, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
-    end)
-    
-    task.delay(Config.Duration + 0.5, function()
-        -- Animation Out
+    -- API Object
+    local Notif = {}
+    local IsDeleted = false
+    local DeleteTimer = nil
+
+    local function GetAutoHeight(text)
+        local h = TextService:GetTextSize(text, 12, Enum.Font.GothamMedium, Vector2.new(260, 1000)).Y
+        return 50 + h
+    end
+
+    function Notif:delete()
+        if IsDeleted then return end
+        IsDeleted = true
+        if DeleteTimer then task.cancel(DeleteTimer) end
+        
         Tween(NotifyFrame, 0.4, {Position = UDim2.new(1, 20, 0, 0), GroupTransparency = 1})
         task.wait(0.4)
         Tween(NotifyFrame, 0.2, {Size = UDim2.new(1, 0, 0, 0)})
         task.wait(0.2)
         NotifyFrame:Destroy()
-    end)
+    end
+
+    function Notif:changeHeading(newText)
+        if IsDeleted then return end
+        Tween(NTitle, 0.2, {TextTransparency = 1})
+        task.wait(0.1)
+        NTitle.Text = newText
+        Tween(NTitle, 0.2, {TextTransparency = 0})
+    end
+
+    function Notif:changeBody(newText)
+        if IsDeleted then return end
+        local newHeight = GetAutoHeight(newText)
+        Tween(NotifyFrame, 0.3, {Size = UDim2.new(1, 0, 0, newHeight)})
+        Tween(NContent, 0.2, {TextTransparency = 1})
+        task.wait(0.1)
+        NContent.Text = newText
+        Tween(NContent, 0.2, {TextTransparency = 0})
+    end
+
+    function Notif:deleteTimeout(newTime)
+        if IsDeleted then return end
+        if DeleteTimer then task.cancel(DeleteTimer) end
+        
+        ProgressBar.Size = UDim2.new(1, 0, 0, 4)
+        Tween(ProgressBar, newTime, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
+        
+        DeleteTimer = task.delay(newTime, function()
+            self:delete()
+        end)
+    end
+
+    -- Initial Animation
+    local totalHeight = GetAutoHeight(Config.Content)
+    NotifyFrame.Position = UDim2.new(1, 20, 0, 0)
+    TweenBounce(NotifyFrame, 0.5, {Size = UDim2.new(1, 0, 0, totalHeight), Position = UDim2.new(0, 0, 0, 0)})
+    Tween(NotifyFrame, 0.3, {GroupTransparency = 0})
+    
+    Notif:deleteTimeout(Config.Duration)
+    
+    return Notif
 end
 
 return Koda
