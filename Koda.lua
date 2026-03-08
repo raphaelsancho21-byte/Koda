@@ -2452,6 +2452,19 @@ function Koda:CreateWindow(Config)
                     Type = "Success"
                 })
             end
+
+            -- PC Keybind Alert
+            if UserInputService.KeyboardEnabled then
+                task.delay(1, function()
+                    local keyName = Window.Keybind.Name
+                    Koda:Notify({
+                        Title = "Dica de Atalho (PC)",
+                        Content = "Pressione [" .. keyName .. "] para ocultar ou mostrar a interface.",
+                        Duration = 8,
+                        Type = "Info"
+                    })
+                end)
+            end
         end)
     end
 
@@ -3072,10 +3085,11 @@ function Koda:Notify(Config)
         if IsDeleted then return end
         if DeleteTimer then task.cancel(DeleteTimer) end
         
+        local duration = tonumber(newTime) or 5
         ProgressBar.Size = UDim2.new(1, 0, 0, 4)
-        Tween(ProgressBar, newTime, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
+        Tween(ProgressBar, duration, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
         
-        DeleteTimer = task.delay(newTime, function()
+        DeleteTimer = task.delay(duration, function()
             self:delete()
         end)
     end
@@ -3088,7 +3102,55 @@ function Koda:Notify(Config)
     
     Notif:deleteTimeout(Config.Duration)
     
+    -- Safety fallback to ensure it eventually disappears
+    task.delay((tonumber(Config.Duration) or 5) + 2, function()
+        if not IsDeleted then Notif:delete() end
+    end)
+    
     return Notif
+end
+
+-- ==========================================
+-- UPDATE ALERT SYSTEM
+-- ==========================================
+function Koda:ShowUpdateAlert(Props)
+    Props = Props or {}
+    local NewVer = Props.Version or "Desconhecida"
+    
+    if Koda.ActiveWindow and Koda.ActiveWindow.CreateDialog then
+        Koda.ActiveWindow:CreateDialog({
+            Title = "🚀 Atualização v" .. NewVer,
+            Content = "Uma nova versão foi detectada! Clique em Reset para atualizar a interface agora ou ignore para continuar.",
+            Buttons = {
+                {
+                    Name = "Reset",
+                    Primary = true,
+                    Callback = function()
+                        Koda:Notify({Title = "Reiniciando...", Content = "Aguarde enquanto recarregamos o script.", Duration = 3})
+                        task.wait(1)
+                        if Koda.ActiveGui then
+                            Koda.ActiveGui:Destroy()
+                            -- Aqui o usuário normalmente teria um loader que detecta a destruição ou re-executa.
+                            -- Como assistente, sugerimos o uso de um loadstring loop.
+                        end
+                    end
+                },
+                {
+                    Name = "Ignorar",
+                    Primary = false,
+                    Callback = function() end
+                }
+            }
+        })
+    else
+        -- Fallback se não houver janela aberta
+        Koda:Notify({
+            Title = "🚀 Atualização Disponível!",
+            Content = "Versão v" .. NewVer .. " detectada. Reinicie o script.",
+            Duration = 15,
+            Type = "Info"
+        })
+    end
 end
 
 return Koda
