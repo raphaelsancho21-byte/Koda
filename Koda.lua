@@ -281,9 +281,48 @@ function Koda:CreateWindow(Config)
     
     function Window:SetStreamProof(Value)
         Koda.StreamProof = Value
-        pcall(function()
+        local success = false
+        
+        -- Method 1: Standard Roblox Property (ScreenGui)
+        local ok1 = pcall(function()
             ScreenGui.DisplayOnCapture = not Value
+            success = true
         end)
+        
+        -- Method 2: Common Executor Global Function
+        if getgenv then
+            local set_doc = getgenv().set_display_on_capture or getgenv().setdisplayoncapture
+            if set_doc then
+                pcall(function() 
+                    set_doc(ScreenGui, not Value)
+                    success = true
+                end)
+            end
+            
+            -- Method 3: ProtectGui (Legacy/Advanced)
+            if Value then
+                local protect = getgenv().protect_gui or (syn and syn.protect_gui) or getgenv().ProtectGui
+                if protect then
+                    pcall(function() protect(ScreenGui) end)
+                end
+            end
+        end
+
+        -- Sync with other UI elements (Billboards)
+        for _, desc in pairs(ScreenGui:GetDescendants()) do
+            if desc:IsA("BillboardGui") then
+                pcall(function() desc.DisplayOnCapture = not Value end)
+            end
+        end
+
+        if Value and not success then
+            Koda:Notify({
+                Title = "⚠️ Aviso de Compatibilidade",
+                Content = "Seu executor pode não suportar No-Recording nativamente. Teste antes de gravar!",
+                Duration = 7,
+                Type = "Warning"
+            })
+        end
     end
     
     -- ═══════════════════════════════════════════════════════
