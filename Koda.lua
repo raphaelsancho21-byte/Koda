@@ -202,6 +202,50 @@ local function HoverEffect(frame, enterProps, leaveProps, speed)
     end)
 end
 
+function Koda:ApplyLegacyOptimization(MainFrame)
+    for _, desc in pairs(MainFrame:GetDescendants()) do
+        if desc.Name == "Glow" or desc.Name == "Shadow" or desc.Name == "GradientBar" then
+            desc:Destroy()
+        elseif desc:IsA("UICorner") then
+            desc.CornerRadius = UDim.new(0, 3) -- Bordas quase quadradas para performance
+        elseif desc:IsA("UIGradient") then
+            desc:Destroy()
+        elseif desc:IsA("Frame") or desc:IsA("ScrollingFrame") or desc:IsA("CanvasGroup") then
+            -- Cores sólidas e remoção de glassmorphism
+            if desc.Name ~= "LoadingFrame" then
+                desc.BackgroundTransparency = 0
+            end
+        elseif desc:IsA("UIStroke") then
+            desc.Transparency = 0.5 -- Bordas mais simples
+            desc.Thickness = 1
+        end
+    end
+    
+    -- Ajustar MainUI Containers
+    MainFrame.BackgroundColor3 = Koda.Theme.MainColor
+    MainFrame.BackgroundTransparency = 0
+    
+    local mainCorner = MainFrame:FindFirstChildOfClass("UICorner")
+    if mainCorner then mainCorner.CornerRadius = UDim.new(0, 6) end
+    
+    local TopBar = MainFrame:FindFirstChild("TopBar")
+    if TopBar then
+        TopBar.BackgroundColor3 = Koda.Theme.DarkerColor
+        TopBar.BackgroundTransparency = 0
+        local tbCorner = TopBar:FindFirstChildOfClass("UICorner")
+        if tbCorner then tbCorner.CornerRadius = UDim.new(0, 6) end
+        
+        local bc = TopBar:FindFirstChild("BottomCover")
+        if bc then bc.BackgroundColor3 = Koda.Theme.DarkerColor end
+    end
+    
+    local SideBar = MainFrame:FindFirstChild("SideBar")
+    if SideBar then
+        SideBar.BackgroundColor3 = Koda.Theme.DarkerColor
+        SideBar.BackgroundTransparency = 0
+    end
+end
+
 local function MakeDraggable(TopBar, MainFrame)
     local Dragging, DragInput, DragStart, StartPos
 
@@ -2411,6 +2455,10 @@ function Koda:CreateWindow(Config)
     -- ═══════════════════════════════════════════════════════
     local function StartLoading()
         task.spawn(function()
+            if Koda.LegacyMode then
+                Koda:ApplyLegacyOptimization(MainFrame)
+            end
+            
             MainFrame.Visible = true
             MainFrame.GroupTransparency = 1
             TweenBounce(MainFrame, 0.6, {Size = Config.Size})
