@@ -7,10 +7,10 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.0.2" -- A cada modificaçao sobe 0.0.1
+Koda.Version = "3.0.3" -- A cada modificaçao sobe 0.0.1
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
-Koda.StreamProof = false -- Flag global para scripts ocultarem ESP
+Koda.LegacyMode = false -- Flag para otimização (remove efeitos visuais)
 
 -- Services
 local UserInputService = game:GetService("UserInputService")
@@ -112,6 +112,7 @@ local function Ripple(obj, color)
 end
 
 local function GlowEffect(parent, color, size, transparency)
+    if Koda.LegacyMode then return nil end
     local glow = Create("ImageLabel", {
         Name = "Glow",
         Parent = parent,
@@ -130,6 +131,7 @@ local function GlowEffect(parent, color, size, transparency)
 end
 
 local function CreateShadow(parent, transparency)
+    if Koda.LegacyMode then return nil end
     local shadow = Create("ImageLabel", {
         Name = "Shadow",
         Parent = parent,
@@ -168,6 +170,7 @@ local function CreateGradientBar(parent, height, position)
 end
 
 local function AnimateGradient(gradient)
+    if Koda.LegacyMode then return end
     task.spawn(function()
         local offset = 0
         while gradient and gradient.Parent do
@@ -268,7 +271,6 @@ function Koda:CreateWindow(Config)
     local Window = {}
     Window.Tabs = {}
     Window.CurrentTab = nil
-    Koda.ActiveWindow = Window
     
     local ScreenGui = Create("ScreenGui", {
         Name = "Koda_" .. HttpService:GenerateGUID(false):sub(1, 8),
@@ -276,54 +278,6 @@ function Koda:CreateWindow(Config)
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     })
-    
-    Koda.ActiveGui = ScreenGui
-    
-    function Window:SetStreamProof(Value)
-        Koda.StreamProof = Value
-        local success = false
-        
-        -- Method 1: Standard Roblox Property (ScreenGui)
-        local ok1 = pcall(function()
-            ScreenGui.DisplayOnCapture = not Value
-            success = true
-        end)
-        
-        -- Method 2: Common Executor Global Function
-        if getgenv then
-            local set_doc = getgenv().set_display_on_capture or getgenv().setdisplayoncapture
-            if set_doc then
-                pcall(function() 
-                    set_doc(ScreenGui, not Value)
-                    success = true
-                end)
-            end
-            
-            -- Method 3: ProtectGui (Legacy/Advanced)
-            if Value then
-                local protect = getgenv().protect_gui or (syn and syn.protect_gui) or getgenv().ProtectGui
-                if protect then
-                    pcall(function() protect(ScreenGui) end)
-                end
-            end
-        end
-
-        -- Sync with other UI elements (Billboards)
-        for _, desc in pairs(ScreenGui:GetDescendants()) do
-            if desc:IsA("BillboardGui") then
-                pcall(function() desc.DisplayOnCapture = not Value end)
-            end
-        end
-
-        if Value and not success then
-            Koda:Notify({
-                Title = "⚠️ Aviso de Compatibilidade",
-                Content = "Seu executor pode não suportar No-Recording nativamente. Teste antes de gravar!",
-                Duration = 7,
-                Type = "Warning"
-            })
-        end
-    end
     
     -- ═══════════════════════════════════════════════════════
     -- NOTIFICATION CONTAINER
@@ -2877,22 +2831,22 @@ function Koda:CreateWindow(Config)
         Create("TextLabel", {
             Parent = SelectionFrame,
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, 20, 0, 65),
+            Position = UDim2.new(0, 20, 0, 60),
             Size = UDim2.new(1, -40, 0, 18),
             Font = Enum.Font.GothamMedium,
-            Text = "Escolha como deseja visualizar a interface:",
+            Text = "Escolha sua experiência e dispositivo:",
             TextColor3 = Koda.Theme.SecondaryTextColor,
             TextSize = 12,
             TextXAlignment = Enum.TextXAlignment.Center
         })
 
-        local function CreateDeviceBtn(name, icon, pos, deviceType)
+        local function CreateDeviceBtn(name, icon, pos, deviceType, isLegacy)
             local Btn = Create("TextButton", {
                 Parent = SelectionFrame,
                 BackgroundColor3 = Koda.Theme.ElementColor,
                 BorderSizePixel = 0,
                 Position = pos,
-                Size = UDim2.new(0.5, -25, 0, 100),
+                Size = UDim2.new(0.5, -25, 0, 110),
                 Font = Enum.Font.GothamBold,
                 Text = "",
                 AutoButtonColor = false,
@@ -2905,7 +2859,7 @@ function Koda:CreateWindow(Config)
                 Parent = Btn,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, 20),
-                Size = UDim2.new(1, 0, 0, 40),
+                Size = UDim2.new(1, 0, 0, 45),
                 Font = Enum.Font.GothamBold,
                 Text = icon,
                 TextSize = 35
@@ -2914,12 +2868,23 @@ function Koda:CreateWindow(Config)
             local NameLabel = Create("TextLabel", {
                 Parent = Btn,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 0, 0, 65),
+                Position = UDim2.new(0, 0, 0, 70),
                 Size = UDim2.new(1, 0, 0, 20),
                 Font = Enum.Font.GothamBold,
                 Text = name,
                 TextColor3 = Koda.Theme.TextColor,
                 TextSize = 14
+            })
+            
+            local SubLabel = Create("TextLabel", {
+                Parent = Btn,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 0, 0, 88),
+                Size = UDim2.new(1, 0, 0, 15),
+                Font = Enum.Font.GothamMedium,
+                Text = isLegacy and "Otimizado (FPS)" or "Completo (Visual)",
+                TextColor3 = isLegacy and Koda.Theme.SuccessColor or Koda.Theme.AccentColor,
+                TextSize = 10
             })
 
             Btn.MouseEnter:Connect(function()
@@ -2936,6 +2901,7 @@ function Koda:CreateWindow(Config)
             Btn.MouseButton1Click:Connect(function()
                 Ripple(Btn, Koda.Theme.AccentColor)
                 Window.Device = deviceType
+                Koda.LegacyMode = isLegacy
                 
                 -- Adapt UI based on device
                 if deviceType == "Mobile" then
@@ -2955,12 +2921,14 @@ function Koda:CreateWindow(Config)
             end)
         end
 
-        CreateDeviceBtn("PC / Desktop", "💻", UDim2.new(0, 20, 1, -135), "PC")
-        CreateDeviceBtn("Mobile / Celular", "📱", UDim2.new(0.5, 5, 1, -135), "Mobile")
+        CreateDeviceBtn("PC (New UI)", "💻", UDim2.new(0, 20, 0, 95), "PC", false)
+        CreateDeviceBtn("PC (Legacy)", "🚀", UDim2.new(0.5, 5, 0, 95), "PC", true)
+        CreateDeviceBtn("Mobile (New)", "📱", UDim2.new(0, 20, 0, 215), "Mobile", false)
+        CreateDeviceBtn("Mobile (Legacy)", "⚡", UDim2.new(0.5, 5, 0, 215), "Mobile", true)
 
         -- Animate In
         SelectionFrame.Size = UDim2.new(0, 0, 0, 0)
-        TweenBounce(SelectionFrame, 0.6, {Size = UDim2.new(0, 380, 0, 240)})
+        TweenBounce(SelectionFrame, 0.6, {Size = UDim2.new(0, 420, 0, 350)})
     end
 
     ShowDeviceSelection()
