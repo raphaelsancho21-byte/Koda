@@ -7,7 +7,7 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.0.2"
+Koda.Version = "3.0.3"
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
 
@@ -3090,7 +3090,7 @@ function Koda:Notify(Config)
         Tween(ProgressBar, duration, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
         
         DeleteTimer = task.delay(duration, function()
-            self:delete()
+            Notif:delete()
         end)
     end
 
