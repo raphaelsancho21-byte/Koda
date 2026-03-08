@@ -7,9 +7,10 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.1.2" -- A cada modificaçao sobe 0.0.1
+Koda.Version = "3.0.2" -- A cada modificaçao sobe 0.0.1
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
+Koda.StreamProof = false -- Flag global para scripts ocultarem ESP
 
 -- Services
 local UserInputService = game:GetService("UserInputService")
@@ -267,6 +268,7 @@ function Koda:CreateWindow(Config)
     local Window = {}
     Window.Tabs = {}
     Window.CurrentTab = nil
+    Koda.ActiveWindow = Window
     
     local ScreenGui = Create("ScreenGui", {
         Name = "Koda_" .. HttpService:GenerateGUID(false):sub(1, 8),
@@ -274,6 +276,15 @@ function Koda:CreateWindow(Config)
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     })
+    
+    Koda.ActiveGui = ScreenGui
+    
+    function Window:SetStreamProof(Value)
+        Koda.StreamProof = Value
+        pcall(function()
+            ScreenGui.DisplayOnCapture = not Value
+        end)
+    end
     
     -- ═══════════════════════════════════════════════════════
     -- NOTIFICATION CONTAINER
