@@ -7,7 +7,7 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.0.2"
+Koda.Version = "3.0.1"
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
 
@@ -23,14 +23,14 @@ local TextService = game:GetService("TextService")
 -- Constants & Theme
 Koda.Themes = {
     Dark = {
-        MainColor = Color3.fromRGB(12, 14, 22),
+        MainColor = Color3.fromRGB(15, 17, 26),
         AccentColor = Color3.fromRGB(99, 102, 241),
         SecondaryAccent = Color3.fromRGB(168, 85, 247),
         TextColor = Color3.fromRGB(245, 245, 250),
         SecondaryTextColor = Color3.fromRGB(140, 140, 165),
-        StrokeColor = Color3.fromRGB(30, 34, 50),
-        DarkerColor = Color3.fromRGB(8, 10, 16),
-        ElementColor = Color3.fromRGB(18, 20, 32),
+        StrokeColor = Color3.fromRGB(35, 40, 55),
+        DarkerColor = Color3.fromRGB(10, 12, 18),
+        ElementColor = Color3.fromRGB(22, 24, 38),
         SuccessColor = Color3.fromRGB(34, 197, 94),
         WarningColor = Color3.fromRGB(250, 204, 21),
         ErrorColor = Color3.fromRGB(239, 68, 68),
@@ -38,109 +38,19 @@ Koda.Themes = {
         ShadowColor = Color3.fromRGB(0, 0, 0)
     },
     Light = {
-        MainColor = Color3.fromRGB(248, 249, 253),
+        MainColor = Color3.fromRGB(245, 247, 252),
         AccentColor = Color3.fromRGB(79, 70, 229),
         SecondaryAccent = Color3.fromRGB(147, 51, 234),
         TextColor = Color3.fromRGB(15, 23, 42),
         SecondaryTextColor = Color3.fromRGB(100, 116, 139),
-        StrokeColor = Color3.fromRGB(215, 220, 235),
-        DarkerColor = Color3.fromRGB(238, 240, 248),
-        ElementColor = Color3.fromRGB(242, 244, 250),
+        StrokeColor = Color3.fromRGB(220, 225, 240),
+        DarkerColor = Color3.fromRGB(235, 238, 245),
+        ElementColor = Color3.fromRGB(255, 255, 255),
         SuccessColor = Color3.fromRGB(22, 163, 74),
         WarningColor = Color3.fromRGB(234, 179, 8),
         ErrorColor = Color3.fromRGB(220, 38, 38),
         InfoColor = Color3.fromRGB(14, 165, 233),
-        ShadowColor = Color3.fromRGB(150, 150, 170)
-    },
-    Amethyst = {
-        MainColor = Color3.fromRGB(13, 10, 24),
-        AccentColor = Color3.fromRGB(168, 85, 247),
-        SecondaryAccent = Color3.fromRGB(236, 72, 153),
-        TextColor = Color3.fromRGB(250, 245, 255),
-        SecondaryTextColor = Color3.fromRGB(148, 130, 184),
-        StrokeColor = Color3.fromRGB(35, 25, 55),
-        DarkerColor = Color3.fromRGB(9, 7, 18),
-        ElementColor = Color3.fromRGB(18, 14, 32),
-        SuccessColor = Color3.fromRGB(34, 197, 94),
-        WarningColor = Color3.fromRGB(250, 204, 21),
-        ErrorColor = Color3.fromRGB(239, 68, 68),
-        InfoColor = Color3.fromRGB(192, 132, 252),
-        ShadowColor = Color3.fromRGB(5, 3, 12)
-    },
-    Emerald = {
-        MainColor = Color3.fromRGB(6, 16, 14),
-        AccentColor = Color3.fromRGB(16, 185, 129),
-        SecondaryAccent = Color3.fromRGB(52, 211, 153),
-        TextColor = Color3.fromRGB(240, 255, 250),
-        SecondaryTextColor = Color3.fromRGB(110, 145, 135),
-        StrokeColor = Color3.fromRGB(15, 35, 28),
-        DarkerColor = Color3.fromRGB(4, 10, 9),
-        ElementColor = Color3.fromRGB(10, 22, 18),
-        SuccessColor = Color3.fromRGB(16, 185, 129),
-        WarningColor = Color3.fromRGB(250, 204, 21),
-        ErrorColor = Color3.fromRGB(239, 68, 68),
-        InfoColor = Color3.fromRGB(52, 211, 153),
-        ShadowColor = Color3.fromRGB(2, 6, 5)
-    },
-    Ruby = {
-        MainColor = Color3.fromRGB(16, 6, 8),
-        AccentColor = Color3.fromRGB(239, 68, 68),
-        SecondaryAccent = Color3.fromRGB(251, 113, 133),
-        TextColor = Color3.fromRGB(255, 245, 245),
-        SecondaryTextColor = Color3.fromRGB(160, 110, 115),
-        StrokeColor = Color3.fromRGB(40, 18, 22),
-        DarkerColor = Color3.fromRGB(10, 4, 5),
-        ElementColor = Color3.fromRGB(22, 10, 12),
-        SuccessColor = Color3.fromRGB(34, 197, 94),
-        WarningColor = Color3.fromRGB(250, 204, 21),
-        ErrorColor = Color3.fromRGB(239, 68, 68),
-        InfoColor = Color3.fromRGB(251, 146, 160),
-        ShadowColor = Color3.fromRGB(5, 2, 2)
-    },
-    Ocean = {
-        MainColor = Color3.fromRGB(8, 12, 21),
-        AccentColor = Color3.fromRGB(56, 189, 248),
-        SecondaryAccent = Color3.fromRGB(99, 102, 241),
-        TextColor = Color3.fromRGB(240, 248, 255),
-        SecondaryTextColor = Color3.fromRGB(120, 150, 175),
-        StrokeColor = Color3.fromRGB(20, 30, 48),
-        DarkerColor = Color3.fromRGB(5, 8, 15),
-        ElementColor = Color3.fromRGB(12, 18, 30),
-        SuccessColor = Color3.fromRGB(34, 197, 94),
-        WarningColor = Color3.fromRGB(250, 204, 21),
-        ErrorColor = Color3.fromRGB(239, 68, 68),
-        InfoColor = Color3.fromRGB(56, 189, 248),
-        ShadowColor = Color3.fromRGB(2, 4, 8)
-    },
-    Sunset = {
-        MainColor = Color3.fromRGB(18, 10, 12),
-        AccentColor = Color3.fromRGB(251, 146, 60),
-        SecondaryAccent = Color3.fromRGB(244, 63, 94),
-        TextColor = Color3.fromRGB(255, 248, 240),
-        SecondaryTextColor = Color3.fromRGB(170, 130, 120),
-        StrokeColor = Color3.fromRGB(40, 25, 20),
-        DarkerColor = Color3.fromRGB(12, 7, 8),
-        ElementColor = Color3.fromRGB(24, 14, 16),
-        SuccessColor = Color3.fromRGB(34, 197, 94),
-        WarningColor = Color3.fromRGB(251, 146, 60),
-        ErrorColor = Color3.fromRGB(244, 63, 94),
-        InfoColor = Color3.fromRGB(251, 191, 36),
-        ShadowColor = Color3.fromRGB(6, 3, 4)
-    },
-    Christmas = {
-        MainColor = Color3.fromRGB(15, 30, 20),
-        AccentColor = Color3.fromRGB(180, 20, 20),
-        SecondaryAccent = Color3.fromRGB(212, 175, 55),
-        TextColor = Color3.fromRGB(245, 245, 245),
-        SecondaryTextColor = Color3.fromRGB(200, 220, 200),
-        StrokeColor = Color3.fromRGB(40, 80, 50),
-        DarkerColor = Color3.fromRGB(10, 20, 15),
-        ElementColor = Color3.fromRGB(25, 45, 30),
-        SuccessColor = Color3.fromRGB(100, 255, 100),
-        WarningColor = Color3.fromRGB(212, 175, 55),
-        ErrorColor = Color3.fromRGB(200, 30, 30),
-        InfoColor = Color3.fromRGB(255, 255, 255),
-        ShadowColor = Color3.fromRGB(0, 0, 0)
+        ShadowColor = Color3.fromRGB(180, 180, 200)
     }
 }
 
