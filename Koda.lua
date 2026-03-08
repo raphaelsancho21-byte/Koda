@@ -7,7 +7,7 @@
 ]]
 
 local Koda = {}
-Koda.Version = "3.0.3"
+Koda.Version = "3.0.2" -- A cada modificaçao sobe 0.0.1
 Koda.NotifyHolder = nil
 Koda.Plugins = {}
 
@@ -2926,7 +2926,7 @@ function Koda:Notify(Config)
     Config.Title = Config.Title or "Notification"
     Config.Content = Config.Content or "Content"
     Config.Duration = Config.Duration or 5
-    Config.Type = Config.Type or "Info" -- Info, Success, Warning, Error, Message
+    Config.Type = Config.Type or "Info"
     
     if not Koda.NotifyHolder then return end
     
@@ -2949,30 +2949,28 @@ function Koda:Notify(Config)
     local accentColor = typeColors[Config.Type] or typeColors.Info
     local icon = typeIcons[Config.Type] or typeIcons.Info
     
+    local function GetAutoHeight(text)
+        local h = TextService:GetTextSize(text, 12, Enum.Font.GothamMedium, Vector2.new(260, 1000)).Y
+        return 50 + h
+    end
+
     local NotifyFrame = Create("CanvasGroup", {
         Name = "Notification",
         Parent = Koda.NotifyHolder,
         BackgroundColor3 = Koda.Theme.MainColor,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, 0),
+        Size = UDim2.new(1, 0, 0, GetAutoHeight(Config.Content)),
         ClipsDescendants = true,
         GroupTransparency = 1
     })
     
     Create("UICorner", { CornerRadius = UDim.new(0, 14), Parent = NotifyFrame })
-    
-    local NotifyStroke = Create("UIStroke", {
-        Color = accentColor,
-        Thickness = 1.5,
-        Parent = NotifyFrame,
-        Transparency = 0.5
-    })
+    Create("UIStroke", { Color = accentColor, Thickness = 1.5, Parent = NotifyFrame, Transparency = 0.5 })
     
     local NotifyAccent = Create("Frame", {
         Parent = NotifyFrame,
         BackgroundColor3 = accentColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 0, 0),
         Size = UDim2.new(0, 4, 1, 0)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = NotifyAccent })
@@ -2985,17 +2983,13 @@ function Koda:Notify(Config)
         Size = UDim2.new(0, 32, 0, 32)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 9), Parent = IconFrame })
-    
-    local IconGrad = Create("UIGradient", {
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, accentColor),
-            ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent)
-        }),
+    Create("UIGradient", {
+        Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, accentColor), ColorSequenceKeypoint.new(1, Koda.Theme.SecondaryAccent) }),
         Rotation = 135,
         Parent = IconFrame
     })
 
-    local IconLabel = Create("TextLabel", {
+    Create("TextLabel", {
         Parent = IconFrame,
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
@@ -3005,7 +2999,7 @@ function Koda:Notify(Config)
         TextSize = 15
     })
     
-    local NTitle = Create("TextLabel", {
+    Create("TextLabel", {
         Parent = NotifyFrame,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 54, 0, 10),
@@ -3036,26 +3030,16 @@ function Koda:Notify(Config)
         BackgroundColor3 = accentColor,
         BackgroundTransparency = 0.4,
         Position = UDim2.new(0, 0, 1, -4),
-        Size = UDim2.new(1, 0, 0, 4),
-        ZIndex = 2
+        Size = UDim2.new(1, 0, 0, 4)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 2), Parent = ProgressBar })
 
-    -- API Object
-    local Notif = {}
-    local IsDeleted = false
-    local DeleteTimer = nil
+    -- Animation & Lifetime
+    NotifyFrame.Position = UDim2.new(1, 20, 0, 0)
+    TweenBounce(NotifyFrame, 0.5, {Position = UDim2.new(0, 0, 0, 0)})
+    Tween(NotifyFrame, 0.3, {GroupTransparency = 0})
 
-    local function GetAutoHeight(text)
-        local h = TextService:GetTextSize(text, 12, Enum.Font.GothamMedium, Vector2.new(260, 1000)).Y
-        return 50 + h
-    end
-
-    function Notif:delete()
-        if IsDeleted then return end
-        IsDeleted = true
-        if DeleteTimer then task.cancel(DeleteTimer) end
-        
+    local function DeleteNotify()
         Tween(NotifyFrame, 0.4, {Position = UDim2.new(1, 20, 0, 0), GroupTransparency = 1})
         task.wait(0.4)
         Tween(NotifyFrame, 0.2, {Size = UDim2.new(1, 0, 0, 0)})
@@ -3063,51 +3047,12 @@ function Koda:Notify(Config)
         NotifyFrame:Destroy()
     end
 
-    function Notif:changeHeading(newText)
-        if IsDeleted then return end
-        Tween(NTitle, 0.2, {TextTransparency = 1})
-        task.wait(0.1)
-        NTitle.Text = newText
-        Tween(NTitle, 0.2, {TextTransparency = 0})
-    end
-
-    function Notif:changeBody(newText)
-        if IsDeleted then return end
-        local newHeight = GetAutoHeight(newText)
-        Tween(NotifyFrame, 0.3, {Size = UDim2.new(1, 0, 0, newHeight)})
-        Tween(NContent, 0.2, {TextTransparency = 1})
-        task.wait(0.1)
-        NContent.Text = newText
-        Tween(NContent, 0.2, {TextTransparency = 0})
-    end
-
-    function Notif:deleteTimeout(newTime)
-        if IsDeleted then return end
-        if DeleteTimer then task.cancel(DeleteTimer) end
-        
-        local duration = tonumber(newTime) or 5
-        ProgressBar.Size = UDim2.new(1, 0, 0, 4)
-        Tween(ProgressBar, duration, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
-        
-        DeleteTimer = task.delay(duration, function()
-            Notif:delete()
-        end)
-    end
-
-    -- Initial Animation
-    local totalHeight = GetAutoHeight(Config.Content)
-    NotifyFrame.Position = UDim2.new(1, 20, 0, 0)
-    TweenBounce(NotifyFrame, 0.5, {Size = UDim2.new(1, 0, 0, totalHeight), Position = UDim2.new(0, 0, 0, 0)})
-    Tween(NotifyFrame, 0.3, {GroupTransparency = 0})
+    local duration = tonumber(Config.Duration) or 5
+    Tween(ProgressBar, duration, {Size = UDim2.new(0, 0, 0, 4)}, Enum.EasingStyle.Linear)
     
-    Notif:deleteTimeout(Config.Duration)
-    
-    -- Safety fallback to ensure it eventually disappears
-    task.delay((tonumber(Config.Duration) or 5) + 2, function()
-        if not IsDeleted then Notif:delete() end
+    task.delay(duration, function()
+        DeleteNotify()
     end)
-    
-    return Notif
 end
 
 -- ==========================================
