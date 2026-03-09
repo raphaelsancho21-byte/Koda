@@ -2930,23 +2930,34 @@ function Koda:CreateWindow(Config)
                 Position = UDim2.new(0, 0, 0, 88),
                 Size = UDim2.new(1, 0, 0, 15),
                 Font = Enum.Font.GothamMedium,
-                Text = isLegacy and "Otimizado (FPS)" or "Completo (Visual)",
-                TextColor3 = isLegacy and Koda.Theme.SuccessColor or Koda.Theme.AccentColor,
+                Text = isLegacy and "Indisponível (BETA)" or (deviceType == "Mobile" and "Mobile UI" or "PC UI"),
+                TextColor3 = isLegacy and Color3.fromRGB(150, 150, 150) or Koda.Theme.AccentColor,
                 TextSize = 10
             })
 
             Btn.MouseEnter:Connect(function()
+                if isLegacy then return end
                 Tween(Btn, 0.2, {BackgroundColor3 = Koda.Theme.DarkerColor})
                 Tween(bStroke, 0.2, {Color = Koda.Theme.AccentColor})
                 Tween(IconLabel, 0.2, {TextSize = 40})
             end)
             Btn.MouseLeave:Connect(function()
+                if isLegacy then return end
                 Tween(Btn, 0.2, {BackgroundColor3 = Koda.Theme.ElementColor})
                 Tween(bStroke, 0.2, {Color = Koda.Theme.StrokeColor})
                 Tween(IconLabel, 0.2, {TextSize = 35})
             end)
 
             Btn.MouseButton1Click:Connect(function()
+                if isLegacy then 
+                    Koda:Notify({
+                        Title = "Opção Indisponível",
+                        Content = "O modo Legacy está sendo refinado e voltará em breve!",
+                        Duration = 5,
+                        Type = "Warning"
+                    })
+                    return 
+                end
                 Ripple(Btn, Koda.Theme.AccentColor)
                 Window.Device = deviceType
                 Koda.LegacyMode = isLegacy
