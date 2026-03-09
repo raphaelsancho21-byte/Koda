@@ -38,6 +38,23 @@ Koda.Themes = {
         InfoColor = Color3.fromRGB(56, 189, 248),
         ShadowColor = Color3.fromRGB(0, 0, 0)
     },
+
+    Bloom = {
+        MainColor = Color3.fromRGB(255, 240, 245), -- Background principal
+        AccentColor = Color3.fromRGB(255, 140, 170), -- Rosa vibrante (ToggleEnabled)
+        SecondaryAccent = Color3.fromRGB(240, 130, 160), -- Rosa profundo (SliderBackground)
+        TextColor = Color3.fromRGB(60, 40, 50), -- Texto principal escuro/vinho
+        SecondaryTextColor = Color3.fromRGB(170, 130, 140), -- Placeholder/Texto secundário
+        StrokeColor = Color3.fromRGB(230, 200, 210), -- Bordas e divisores
+        DarkerColor = Color3.fromRGB(250, 220, 225), -- Topbar ou áreas de destaque
+        ElementColor = Color3.fromRGB(255, 235, 240), -- Background de botões/inputs
+        SuccessColor = Color3.fromRGB(150, 220, 170), -- Verde Pastel (ajustado para o tema)
+        WarningColor = Color3.fromRGB(250, 204, 150), -- Amarelo Pastel
+        ErrorColor = Color3.fromRGB(240, 150, 150), -- Vermelho Pastel
+        InfoColor = Color3.fromRGB(160, 200, 240), -- Azul Pastel
+        ShadowColor = Color3.fromRGB(230, 190, 195) -- Sombra suave rosada
+    },
+    
     Light = {
         MainColor = Color3.fromRGB(245, 247, 252),
         AccentColor = Color3.fromRGB(79, 70, 229),
