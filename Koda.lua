@@ -2138,6 +2138,338 @@ function Koda:CreateWindow(Config)
         end
 
         -- ═══════════════════════════════════════════════════════
+        -- BADGE (New)
+        -- ═══════════════════════════════════════════════════════
+        function Tab:CreateBadge(Props)
+            Props = Props or {}
+            Props.Text = Props.Text or "Badge"
+            Props.Type = Props.Type or "Accent" -- Success, Warning, Error, Info, Accent
+            Props.Icon = Props.Icon or ""
+
+            local typeColors = {
+                Success = Koda.Themes.Dark.SuccessColor or Color3.fromRGB(34, 197, 94),
+                Warning = Koda.Themes.Dark.WarningColor or Color3.fromRGB(234, 179, 8),
+                Error = Koda.Themes.Dark.ErrorColor or Color3.fromRGB(239, 68, 68),
+                Info = Koda.Themes.Dark.InfoColor or Color3.fromRGB(56, 189, 248),
+                Accent = Koda.Theme.AccentColor
+            }
+            
+            local color = typeColors[Props.Type] or Koda.Theme.AccentColor
+
+            local BadgeFrame = Create("Frame", {
+                Name = "Badge",
+                Parent = TabScroll,
+                BackgroundColor3 = color,
+                BackgroundTransparency = 0.88,
+                BorderSizePixel = 0,
+                Size = UDim2.new(0, 0, 0, 24),
+                AutomaticSize = Enum.AutomaticSize.X
+            })
+            Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = BadgeFrame })
+            Create("UIStroke", { Color = color, Thickness = 1, Transparency = 0.5, Parent = BadgeFrame })
+
+            local Label = Create("TextLabel", {
+                Parent = BadgeFrame,
+                BackgroundTransparency = 1,
+                Size = UDim2.new(0, 0, 1, 0),
+                AutomaticSize = Enum.AutomaticSize.X,
+                Font = Enum.Font.GothamBold,
+                Text = (Props.Icon ~= "" and Props.Icon .. " " or "") .. Props.Text,
+                TextColor3 = color,
+                TextSize = 11,
+                PaddingLeft = UDim.new(0, 10),
+                PaddingRight = UDim.new(0, 10)
+            })
+            Create("UIPadding", { Parent = Label, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) })
+
+            return {
+                Set = function(_, NewText)
+                    Label.Text = NewText
+                end
+            }
+        end
+
+        -- ═══════════════════════════════════════════════════════
+        -- PROGRESS BAR (New)
+        -- ═══════════════════════════════════════════════════════
+        function Tab:CreateProgressBar(Props)
+            Props = Props or {}
+            Props.Name = Props.Name or "Progress"
+            Props.Percent = Props.Percent or 0
+            
+            local ProgressFrame = Create("Frame", {
+                Name = "ProgressBar",
+                Parent = TabScroll,
+                BackgroundColor3 = Koda.Theme.ElementColor,
+                BackgroundTransparency = 0.1,
+                Size = UDim2.new(0.93, 0, 0, 48)
+            })
+            Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = ProgressFrame })
+            
+            Create("TextLabel", {
+                Parent = ProgressFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 12, 0, 8),
+                Size = UDim2.new(1, -24, 0, 16),
+                Font = Enum.Font.GothamSemibold,
+                Text = Props.Name,
+                TextColor3 = Koda.Theme.TextColor,
+                TextSize = 13,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            local BarBack = Create("Frame", {
+                Parent = ProgressFrame,
+                BackgroundColor3 = Koda.Theme.DarkerColor,
+                Position = UDim2.new(0, 12, 1, -16),
+                Size = UDim2.new(1, -24, 0, 6)
+            })
+            Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = BarBack })
+
+            local BarFill = Create("Frame", {
+                Parent = BarBack,
+                BackgroundColor3 = Koda.Theme.AccentColor,
+                Size = UDim2.new(Props.Percent / 100, 0, 1, 0)
+            })
+            Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = BarFill })
+
+            return {
+                Set = function(_, NewPercent)
+                    Tween(BarFill, 0.3, {Size = UDim2.new(math.clamp(NewPercent / 100, 0, 1), 0, 1, 0)})
+                end
+            }
+        end
+
+        -- ═══════════════════════════════════════════════════════
+        -- DIVIDER (New)
+        -- ═══════════════════════════════════════════════════════
+        function Tab:CreateDivider()
+            local Divider = Create("Frame", {
+                Name = "Divider",
+                Parent = TabScroll,
+                BackgroundColor3 = Koda.Theme.StrokeColor,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                Size = UDim2.new(0.9, 0, 0, 1)
+            })
+            return Divider
+        end
+
+        -- ═══════════════════════════════════════════════════════
+        -- TEXT AREA (New)
+        -- ═══════════════════════════════════════════════════════
+        function Tab:CreateTextArea(Props)
+            Props = Props or {}
+            Props.Name = Props.Name or "Text Area"
+            Props.Content = Props.Content or ""
+
+            local TextAreaFrame = Create("Frame", {
+                Name = "TextArea",
+                Parent = TabScroll,
+                BackgroundColor3 = Koda.Theme.ElementColor,
+                BackgroundTransparency = 0.1,
+                Size = UDim2.new(0.93, 0, 0, 100)
+            })
+            Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = TextAreaFrame })
+            
+            local Scroll = Create("ScrollingFrame", {
+                Parent = TextAreaFrame,
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, 10, 0, 10),
+                Size = UDim2.new(1, -20, 1, -20),
+                CanvasSize = UDim2.new(0, 0, 0, 0),
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                ScrollBarThickness = 2,
+                ScrollBarImageColor3 = Koda.Theme.AccentColor
+            })
+
+            local Text = Create("TextLabel", {
+                Parent = Scroll,
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 0),
+                AutomaticSize = Enum.AutomaticSize.Y,
+                Font = Enum.Font.GothamMedium,
+                Text = Props.Content,
+                TextColor3 = Koda.Theme.SecondaryTextColor,
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextYAlignment = Enum.TextYAlignment.Top,
+                TextWrapped = true
+            })
+
+            return {
+                Set = function(_, NewContent)
+                    Text.Text = NewContent
+                end
+            }
+        end
+
+        -- ═══════════════════════════════════════════════════════
+        -- MULTI DROPDOWN (New)
+        -- ═══════════════════════════════════════════════════════
+        function Tab:CreateMultiDropdown(Props)
+            Props = Props or {}
+            Props.Name = Props.Name or "Multi Dropdown"
+            Props.Options = Props.Options or {"Option 1", "Option 2"}
+            Props.Selected = Props.Selected or {}
+            Props.Callback = Props.Callback or function() end
+            
+            local Selected = {}
+            for _, v in pairs(Props.Selected) do Selected[v] = true end
+            
+            local Opened = false
+            
+            local DropdownFrame = Create("Frame", {
+                Name = Props.Name .. "MultiDropdown",
+                Parent = TabScroll,
+                BackgroundColor3 = Koda.Theme.ElementColor,
+                BackgroundTransparency = 0.1,
+                Size = UDim2.new(0.93, 0, 0, 42),
+                ClipsDescendants = true
+            })
+            Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = DropdownFrame })
+            local ddStroke = Create("UIStroke", { Color = Koda.Theme.StrokeColor, Thickness = 1, Transparency = 0.2, Parent = DropdownFrame })
+
+            local Title = Create("TextLabel", {
+                Parent = DropdownFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 14, 0, 0),
+                Size = UDim2.new(1, -130, 0, 42),
+                Font = Enum.Font.GothamSemibold,
+                Text = Props.Name,
+                TextColor3 = Koda.Theme.TextColor,
+                TextSize = 13,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            local CountBadge = Create("Frame", {
+                Parent = DropdownFrame,
+                BackgroundColor3 = Koda.Theme.AccentColor,
+                BackgroundTransparency = 0.85,
+                Position = UDim2.new(1, -60, 0, 10),
+                Size = UDim2.new(0, 22, 0, 22)
+            })
+            Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = CountBadge })
+            
+            local CountLabel = Create("TextLabel", {
+                Parent = CountBadge,
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Font = Enum.Font.GothamBold,
+                Text = tostring(#Props.Selected),
+                TextColor3 = Koda.Theme.AccentColor,
+                TextSize = 11
+            })
+
+            local Arrow = Create("TextLabel", {
+                Parent = DropdownFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -32, 0, 12),
+                Size = UDim2.new(0, 18, 0, 18),
+                Font = Enum.Font.GothamBold,
+                Text = "▼",
+                TextColor3 = Koda.Theme.SecondaryTextColor,
+                TextSize = 10
+            })
+
+            local ItemsContainer = Create("Frame", {
+                Name = "Items",
+                Parent = DropdownFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 0, 0, 46),
+                Size = UDim2.new(1, 0, 0, 0)
+            })
+            Create("UIListLayout", { Parent = ItemsContainer, Padding = UDim.new(0, 3) })
+            Create("UIPadding", { Parent = ItemsContainer, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), PaddingBottom = UDim.new(0, 6) })
+
+            local function Toggle(State)
+                Opened = State
+                Tween(Arrow, 0.25, {Rotation = Opened and 180 or 0})
+                local ContentSize = 42
+                if Opened then
+                    ContentSize = ContentSize + 8 + (#Props.Options * 31) + 6
+                end
+                Tween(DropdownFrame, 0.3, {Size = UDim2.new(0.93, 0, 0, ContentSize)})
+            end
+
+            local function Update()
+                local count = 0
+                local list = {}
+                for k, v in pairs(Selected) do if v then count = count + 1 table.insert(list, k) end end
+                CountLabel.Text = tostring(count)
+                Props.Callback(list)
+                
+                for _, child in pairs(ItemsContainer:GetChildren()) do
+                    if child:IsA("Frame") and child:FindFirstChild("Indicator") then
+                        local isSel = Selected[child.Name]
+                        Tween(child.Indicator, 0.2, {BackgroundTransparency = isSel and 0 or 1})
+                    end
+                end
+            end
+
+            for _, opt in pairs(Props.Options) do
+                local optFrame = Create("Frame", {
+                    Name = opt,
+                    Parent = ItemsContainer,
+                    BackgroundColor3 = Koda.Theme.DarkerColor,
+                    BackgroundTransparency = 0.2,
+                    Size = UDim2.new(1, 0, 0, 28)
+                })
+                Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = optFrame })
+                
+                local Indicator = Create("Frame", {
+                    Name = "Indicator",
+                    Parent = optFrame,
+                    BackgroundColor3 = Koda.Theme.AccentColor,
+                    Position = UDim2.new(0, 8, 0.5, -4),
+                    Size = UDim2.new(0, 8, 0, 8),
+                    BackgroundTransparency = Selected[opt] and 0 or 1
+                })
+                Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = Indicator })
+
+                Create("TextLabel", {
+                    Parent = optFrame,
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 24, 0, 0),
+                    Size = UDim2.new(1, -30, 1, 0),
+                    Font = Enum.Font.GothamMedium,
+                    Text = opt,
+                    TextColor3 = Koda.Theme.SecondaryTextColor,
+                    TextSize = 12,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+
+                local btn = Create("TextButton", {
+                    Parent = optFrame,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 1, 0),
+                    Text = ""
+                })
+                btn.MouseButton1Click:Connect(function()
+                    Selected[opt] = not Selected[opt]
+                    Update()
+                end)
+            end
+
+            local MainButton = Create("TextButton", {
+                Parent = DropdownFrame,
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 42),
+                Text = ""
+            })
+            MainButton.MouseButton1Click:Connect(function() Toggle(not Opened) end)
+
+            return {
+                Get = function()
+                    local list = {}
+                    for k, v in pairs(Selected) do if v then table.insert(list, k) end end
+                    return list
+                end
+            }
+        end
+
+        -- ═══════════════════════════════════════════════════════
         -- TAB SELECTION
         -- ═══════════════════════════════════════════════════════
         function Tab:Select()
@@ -2938,24 +3270,22 @@ function Koda:CreateWindow(Config)
         })
 
         local function SwitchTab(tab)
-            if tab == "Device" then
-                Tween(DeviceTabBtn, 0.2, {TextColor3 = Koda.Theme.AccentColor})
-                Tween(ConfigTabBtn, 0.2, {TextColor3 = Koda.Theme.SecondaryTextColor})
-                Tween(TabIndicator, 0.25, {Position = UDim2.new(0, 0, 1, -2)})
-                
+            local isDevice = (tab == "Device")
+            
+            Tween(DeviceTabBtn, 0.2, {TextColor3 = isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor})
+            Tween(ConfigTabBtn, 0.2, {TextColor3 = not isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor})
+            Tween(TabIndicator, 0.25, {Position = UDim2.new(isDevice and 0 or 0.5, 0, 1, -2)})
+            
+            if isDevice then
                 DevicePage.Visible = true
                 Tween(DevicePage, 0.3, {Position = UDim2.new(0, 0, 0, 90)})
                 Tween(ConfigPage, 0.3, {Position = UDim2.new(1, 0, 0, 90)})
-                task.delay(0.3, function() if not DevicePage.Visible then ConfigPage.Visible = false end end)
+                task.delay(0.3, function() if tab == "Device" then ConfigPage.Visible = false end end)
             else
-                Tween(DeviceTabBtn, 0.2, {TextColor3 = Koda.Theme.SecondaryTextColor})
-                Tween(ConfigTabBtn, 0.2, {TextColor3 = Koda.Theme.AccentColor})
-                Tween(TabIndicator, 0.25, {Position = UDim2.new(0.5, 0, 1, -2)})
-                
                 ConfigPage.Visible = true
                 Tween(DevicePage, 0.3, {Position = UDim2.new(-1, 0, 0, 90)})
                 Tween(ConfigPage, 0.3, {Position = UDim2.new(0, 0, 0, 90)})
-                task.delay(0.3, function() if not ConfigPage.Visible then DevicePage.Visible = false end end)
+                task.delay(0.3, function() if tab == "Config" then DevicePage.Visible = false end end)
             end
         end
 
@@ -3001,6 +3331,7 @@ function Koda:CreateWindow(Config)
             })
 
             local NameLabel = Create("TextLabel", {
+                Name = "NameLabel",
                 Parent = Btn,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, 65),
@@ -3012,6 +3343,7 @@ function Koda:CreateWindow(Config)
             })
             
             local SubLabel = Create("TextLabel", {
+                Name = "SubLabel",
                 Parent = Btn,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, 82),
@@ -3120,6 +3452,18 @@ function Koda:CreateWindow(Config)
 
         -- Theme Config
         local ThemeRow = CreateConfigRow("Tema Visual:", ConfigPage, UDim2.new(0, 20, 0, 60))
+        local ThemeLabel = Create("TextLabel", {
+            Name = "ThemeLabel",
+            Parent = ConfigPage,
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 20, 0, 95),
+            Size = UDim2.new(1, -40, 0, 15),
+            Font = Enum.Font.GothamBold,
+            Text = "Prévia de Temas:",
+            TextColor3 = Koda.Theme.TextColor,
+            TextSize = 9,
+            TextTransparency = 0.4
+        })
         
         local function ApplySelectionTheme()
             SelectionFrame.BackgroundColor3 = Koda.Theme.MainColor
@@ -3127,7 +3471,47 @@ function Koda:CreateWindow(Config)
             sStroke.Color = Koda.Theme.StrokeColor
             STitle.TextColor3 = Koda.Theme.TextColor
             TabIndicator.BackgroundColor3 = Koda.Theme.AccentColor
-            -- Buttons follow accent
+            DeviceIcon.BackgroundColor3 = Koda.Theme.AccentColor
+            
+            -- Update active tab button text color
+            local isDevice = (DevicePage.Position.X.Scale == 0)
+            DeviceTabBtn.TextColor3 = isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor
+            ConfigTabBtn.TextColor3 = not isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor
+
+            -- Update Device buttons
+            for _, btn in pairs(DevicePage:GetChildren()) do
+                if btn:IsA("TextButton") then
+                    btn.BackgroundColor3 = Koda.Theme.ElementColor
+                    local stroke = btn:FindFirstChildOfClass("UIStroke")
+                    if stroke then stroke.Color = Koda.Theme.StrokeColor end
+                    local nameL = btn:FindFirstChild("NameLabel")
+                    if nameL then nameL.TextColor3 = Koda.Theme.TextColor end
+                    local subL = btn:FindFirstChild("SubLabel")
+                    if subL then 
+                        if subL.Text ~= "BETA" then
+                            subL.TextColor3 = Koda.Theme.AccentColor
+                        end
+                    end
+                end
+            end
+
+            -- Update Config Page elements
+            for _, row in pairs(ConfigPage:GetChildren()) do
+                if row:IsA("Frame") then
+                    local label = row:FindFirstChildOfClass("TextLabel")
+                    if label then label.TextColor3 = Koda.Theme.TextColor end
+                    local btn = row:FindFirstChildOfClass("TextButton")
+                    if btn then 
+                        btn.BackgroundColor3 = Koda.Theme.ElementColor
+                        btn.TextColor3 = Koda.Theme.AccentColor
+                        local stroke = btn:FindFirstChildOfClass("UIStroke")
+                        if stroke then stroke.Color = Koda.Theme.StrokeColor end
+                    end
+                end
+            end
+            
+            local themeLabel = ConfigPage:FindFirstChild("ThemeLabel", true)
+            if themeLabel then themeLabel.TextColor3 = Koda.Theme.TextColor end
         end
 
         local ThemeContainer = Create("Frame", {
