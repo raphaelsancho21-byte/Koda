@@ -3211,103 +3211,30 @@ function Koda:CreateWindow(Config)
             TextXAlignment = Enum.TextXAlignment.Left
         })
 
-        -- Tab Buttons
-        local SelectionTabs = Create("Frame", {
-            Name = "Tabs",
-            Parent = SelectionFrame,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 0, 0, 50),
-            Size = UDim2.new(1, 0, 0, 40)
-        })
-
-        local DeviceTabBtn = Create("TextButton", {
-            Parent = SelectionTabs,
-            BackgroundTransparency = 1,
-            Size = UDim2.new(0.5, 0, 1, 0),
-            Font = Enum.Font.GothamBold,
-            Text = "Dispositivos",
-            TextColor3 = Koda.Theme.AccentColor,
-            TextSize = 12,
-            AutoButtonColor = false
-        })
-
-        local ConfigTabBtn = Create("TextButton", {
-            Parent = SelectionTabs,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0.5, 0, 0, 0),
-            Size = UDim2.new(0.5, 0, 1, 0),
-            Font = Enum.Font.GothamBold,
-            Text = "Preferências",
-            TextColor3 = Koda.Theme.SecondaryTextColor,
-            TextSize = 12,
-            AutoButtonColor = false
-        })
-
-        local TabIndicator = Create("Frame", {
-            Parent = SelectionTabs,
-            BackgroundColor3 = Koda.Theme.AccentColor,
-            Position = UDim2.new(0, 0, 1, -2),
-            Size = UDim2.new(0.5, 0, 0, 2)
-        })
-
-        -- Pages
-        local DevicePage = Create("Frame", {
-            Name = "DevicePage",
-            Parent = SelectionFrame,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 0, 0, 90),
-            Size = UDim2.new(1, 0, 1, -95),
-            Visible = true
-        })
-
-        local ConfigPage = Create("Frame", {
-            Name = "ConfigPage",
-            Parent = SelectionFrame,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(1, 0, 0, 90),
-            Size = UDim2.new(1, 0, 1, -95),
-            Visible = false
-        })
-
-        local function SwitchTab(tab)
-            local isDevice = (tab == "Device")
-            
-            Tween(DeviceTabBtn, 0.2, {TextColor3 = isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor})
-            Tween(ConfigTabBtn, 0.2, {TextColor3 = not isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor})
-            Tween(TabIndicator, 0.25, {Position = UDim2.new(isDevice and 0 or 0.5, 0, 1, -2)})
-            
-            if isDevice then
-                DevicePage.Visible = true
-                Tween(DevicePage, 0.3, {Position = UDim2.new(0, 0, 0, 90)})
-                Tween(ConfigPage, 0.3, {Position = UDim2.new(1, 0, 0, 90)})
-                task.delay(0.3, function() if tab == "Device" then ConfigPage.Visible = false end end)
-            else
-                ConfigPage.Visible = true
-                Tween(DevicePage, 0.3, {Position = UDim2.new(-1, 0, 0, 90)})
-                Tween(ConfigPage, 0.3, {Position = UDim2.new(0, 0, 0, 90)})
-                task.delay(0.3, function() if tab == "Config" then DevicePage.Visible = false end end)
-            end
-        end
-
-        DeviceTabBtn.MouseButton1Click:Connect(function() SwitchTab("Device") end)
-        ConfigTabBtn.MouseButton1Click:Connect(function() SwitchTab("Config") end)
-
         -- DEVICE PAGE CONTENT
         Create("TextLabel", {
-            Parent = DevicePage,
+            Parent = SelectionFrame,
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, 20, 0, 5),
-            Size = UDim2.new(1, -40, 0, 18),
+            Position = UDim2.new(0, 0, 0, 58),
+            Size = UDim2.new(1, 0, 0, 18),
             Font = Enum.Font.GothamMedium,
-            Text = "Escolha seu dispositivo:",
+            Text = "Escolha seu dispositivo para otimizar a interface:",
             TextColor3 = Koda.Theme.SecondaryTextColor,
             TextSize = 11,
             TextXAlignment = Enum.TextXAlignment.Center
         })
 
+        local DeviceContainer = Create("Frame", {
+            Name = "DeviceContainer",
+            Parent = SelectionFrame,
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 0, 0, 90),
+            Size = UDim2.new(1, 0, 1, -95)
+        })
+
         local function CreateDeviceBtn(name, icon, pos, deviceType, isLegacy)
             local Btn = Create("TextButton", {
-                Parent = DevicePage,
+                Parent = DeviceContainer,
                 BackgroundColor3 = Koda.Theme.ElementColor,
                 BorderSizePixel = 0,
                 Position = pos,
@@ -3396,189 +3323,14 @@ function Koda:CreateWindow(Config)
             end)
         end
 
-        CreateDeviceBtn("PC (Moderno)", "💻", UDim2.new(0, 20, 0, 35), "PC", false)
-        CreateDeviceBtn("PC (Legacy)", "🚀", UDim2.new(0.5, 5, 0, 35), "PC", true)
-        CreateDeviceBtn("Mobile", "📱", UDim2.new(0, 20, 0, 150), "Mobile", false)
-        CreateDeviceBtn("Tablet", "📟", UDim2.new(0.5, 5, 0, 150), "Mobile", true)
-
-        -- CONFIG PAGE CONTENT
-        local function CreateConfigRow(name, parent, pos)
-            local Row = Create("Frame", {
-                Parent = parent,
-                BackgroundTransparency = 1,
-                Position = pos,
-                Size = UDim2.new(1, -40, 0, 40)
-            })
-            Create("TextLabel", {
-                Parent = Row,
-                BackgroundTransparency = 1,
-                Size = UDim2.new(0.4, 0, 1, 0),
-                Font = Enum.Font.GothamBold,
-                Text = name,
-                TextColor3 = Koda.Theme.TextColor,
-                TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Left
-            })
-            return Row
-        end
-
-        -- Keybind Config
-        local KeyRow = CreateConfigRow("Atalho (Toggle):", ConfigPage, UDim2.new(0, 20, 0, 10))
-        local KeyBtn = Create("TextButton", {
-            Parent = KeyRow,
-            BackgroundColor3 = Koda.Theme.ElementColor,
-            Position = UDim2.new(0.5, 0, 0.1, 0),
-            Size = UDim2.new(0.5, 0, 0.8, 0),
-            Font = Enum.Font.GothamBold,
-            Text = Config.Keybind.Name,
-            TextColor3 = Koda.Theme.AccentColor,
-            TextSize = 12,
-            AutoButtonColor = false
-        })
-        Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = KeyBtn })
-        Create("UIStroke", { Color = Koda.Theme.StrokeColor, Thickness = 1, Parent = KeyBtn })
-
-        KeyBtn.MouseButton1Click:Connect(function()
-            KeyBtn.Text = "..."
-            local connection
-            connection = UserInputService.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.Keyboard then
-                    Config.Keybind = input.KeyCode
-                    KeyBtn.Text = input.KeyCode.Name
-                    connection:Disconnect()
-                end
-            end)
-        end)
-
-        -- Theme Config
-        local ThemeRow = CreateConfigRow("Tema Visual:", ConfigPage, UDim2.new(0, 20, 0, 60))
-        local ThemeLabel = Create("TextLabel", {
-            Name = "ThemeLabel",
-            Parent = ConfigPage,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 20, 0, 95),
-            Size = UDim2.new(1, -40, 0, 15),
-            Font = Enum.Font.GothamBold,
-            Text = "Prévia de Temas:",
-            TextColor3 = Koda.Theme.TextColor,
-            TextSize = 9,
-            TextTransparency = 0.4
-        })
-        
-        local function ApplySelectionTheme()
-            SelectionFrame.BackgroundColor3 = Koda.Theme.MainColor
-            STopBar.BackgroundColor3 = Koda.Theme.DarkerColor
-            sStroke.Color = Koda.Theme.StrokeColor
-            STitle.TextColor3 = Koda.Theme.TextColor
-            TabIndicator.BackgroundColor3 = Koda.Theme.AccentColor
-            DeviceIcon.BackgroundColor3 = Koda.Theme.AccentColor
-            
-            -- Update active tab button text color
-            local isDevice = (DevicePage.Position.X.Scale == 0)
-            DeviceTabBtn.TextColor3 = isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor
-            ConfigTabBtn.TextColor3 = not isDevice and Koda.Theme.AccentColor or Koda.Theme.SecondaryTextColor
-
-            -- Update Device buttons
-            for _, btn in pairs(DevicePage:GetChildren()) do
-                if btn:IsA("TextButton") then
-                    btn.BackgroundColor3 = Koda.Theme.ElementColor
-                    local stroke = btn:FindFirstChildOfClass("UIStroke")
-                    if stroke then stroke.Color = Koda.Theme.StrokeColor end
-                    local nameL = btn:FindFirstChild("NameLabel")
-                    if nameL then nameL.TextColor3 = Koda.Theme.TextColor end
-                    local subL = btn:FindFirstChild("SubLabel")
-                    if subL then 
-                        if subL.Text ~= "BETA" then
-                            subL.TextColor3 = Koda.Theme.AccentColor
-                        end
-                    end
-                end
-            end
-
-            -- Update Config Page elements
-            for _, row in pairs(ConfigPage:GetChildren()) do
-                if row:IsA("Frame") then
-                    local label = row:FindFirstChildOfClass("TextLabel")
-                    if label then label.TextColor3 = Koda.Theme.TextColor end
-                    local btn = row:FindFirstChildOfClass("TextButton")
-                    if btn then 
-                        btn.BackgroundColor3 = Koda.Theme.ElementColor
-                        btn.TextColor3 = Koda.Theme.AccentColor
-                        local stroke = btn:FindFirstChildOfClass("UIStroke")
-                        if stroke then stroke.Color = Koda.Theme.StrokeColor end
-                    end
-                end
-            end
-            
-            local themeLabel = ConfigPage:FindFirstChild("ThemeLabel", true)
-            if themeLabel then themeLabel.TextColor3 = Koda.Theme.TextColor end
-        end
-
-        local ThemeContainer = Create("Frame", {
-            Parent = ConfigPage,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 20, 0, 105),
-            Size = UDim2.new(1, -40, 0, 80)
-        })
-        Create("UIListLayout", {
-            Parent = ThemeContainer,
-            FillDirection = Enum.FillDirection.Horizontal,
-            Padding = UDim.new(0, 10),
-            HorizontalAlignment = Enum.HorizontalAlignment.Center
-        })
-
-        for themeName, themeData in pairs(Koda.Themes) do
-            local TBtn = Create("TextButton", {
-                Parent = ThemeContainer,
-                BackgroundColor3 = themeData.MainColor,
-                Size = UDim2.new(0.3, -7, 0, 60),
-                Text = "",
-                AutoButtonColor = false
-            })
-            Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = TBtn })
-            local tStroke = Create("UIStroke", { 
-                Color = (Config.Theme == themeName) and themeData.AccentColor or themeData.StrokeColor, 
-                Thickness = 2, 
-                Parent = TBtn 
-            })
-            
-            Create("Frame", {
-                Parent = TBtn,
-                BackgroundColor3 = themeData.AccentColor,
-                Position = UDim2.new(0.5, -15, 0.3, 0),
-                Size = UDim2.new(0, 30, 0, 10)
-            })
-            
-            Create("TextLabel", {
-                Parent = TBtn,
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 0, 0.6, 0),
-                Size = UDim2.new(1, 0, 0, 20),
-                Font = Enum.Font.GothamBold,
-                Text = themeName,
-                TextColor3 = themeData.TextColor,
-                TextSize = 10
-            })
-
-            TBtn.MouseButton1Click:Connect(function()
-                Config.Theme = themeName
-                Koda.Theme = themeData
-                ApplySelectionTheme()
-                -- Update all other theme strokes
-                for _, child in pairs(ThemeContainer:GetChildren()) do
-                    if child:IsA("TextButton") then
-                        local stroke = child:FindFirstChildOfClass("UIStroke")
-                        if stroke then stroke.Color = Koda.Themes[child.Name].StrokeColor end
-                    end
-                end
-                tStroke.Color = themeData.AccentColor
-            end)
-            TBtn.Name = themeName
-        end
+        CreateDeviceBtn("Computador", "💻", UDim2.new(0, 25, 0, 25), "PC", false)
+        CreateDeviceBtn("Dispositivo Móvel", "📱", UDim2.new(0.5, 5, 0, 25), "Mobile", false)
+        CreateDeviceBtn("Legacy Mode", "🚀", UDim2.new(0, 25, 0, 140), "PC", true)
+        CreateDeviceBtn("Tablet Mode", "📟", UDim2.new(0.5, 5, 0, 140), "Mobile", true)
 
         -- Animate In
         SelectionFrame.Size = UDim2.new(0, 0, 0, 0)
-        TweenBounce(SelectionFrame, 0.6, {Size = UDim2.new(0, 420, 0, 380)})
+        TweenBounce(SelectionFrame, 0.6, {Size = UDim2.new(0, 420, 0, 360)})
     end
 
     ShowDeviceSelection()
