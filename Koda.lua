@@ -320,6 +320,7 @@ function Koda:CreateWindow(Config)
     Config.Name = Config.Name or "Koda Library"
     Config.Theme = Config.Theme or "Dark"
     Config.Size = Config.Size or UDim2.new(0, 700, 0, 460)
+    Config.Keybind = Config.Keybind or Enum.KeyCode.RightControl
     
     local KeySystem = Config.KeySystem or false
     local KeySettings = Config.KeySettings or {}
@@ -2821,7 +2822,7 @@ function Koda:CreateWindow(Config)
     local function ShowDeviceSelection()
         local SelectionFrame = Create("CanvasGroup", {
             Name = "DeviceSelection",
-            Parent = MainGui,
+            Parent = ScreenGui,
             BackgroundColor3 = Koda.Theme.MainColor,
             BorderSizePixel = 0,
             Position = UDim2.new(0.5, 0, 0.5, 0),
